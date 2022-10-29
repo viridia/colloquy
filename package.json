@@ -1,0 +1,39 @@
+{
+  "name": "colloquy",
+  "scripts": {
+    "dev": "solid-start dev --port 5005",
+    "build": "solid-start build",
+    "build:svg": "svgr --template scripts/svg-template.cjs --typescript artwork/icons/ -d src/icons/",
+    "start": "solid-start start"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@svgr/cli": "^6.5.1",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "eslint": "^8.26.0",
+    "eslint-plugin-deprecation": "^1.3.2",
+    "eslint-plugin-import": "^2.26.0",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "solid-start-node": "^0.2.0",
+    "typescript": "^4.8.4",
+    "vite": "^3.1.8"
+  },
+  "dependencies": {
+    "@solidjs/meta": "^0.28.0",
+    "@solidjs/router": "^0.5.0",
+    "dolmen": "^0.0.3",
+    "solid-js": "^1.6.0",
+    "solid-start": "^0.2.0",
+    "undici": "^5.11.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 100,
+    "arrowParens": "avoid"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
