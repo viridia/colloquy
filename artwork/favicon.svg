@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2 (dc2aeda, 2022-05-15)"
+   sodipodi:docname="favicon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#676767"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#474747"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="19.02887"
+     inkscape:cx="28.194002"
+     inkscape:cy="19.050001"
+     inkscape:window-width="1512"
+     inkscape:window-height="867"
+     inkscape:window-x="0"
+     inkscape:window-y="38"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid132" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter19989"
+       x="-0.094288895"
+       y="-0.083195649"
+       width="1.1884796"
+       height="1.166373">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.13884994"
+         id="feGaussianBlur19991" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#cfcec3;fill-opacity:1;stroke:none;stroke-width:0.165;stroke-linecap:round;stroke-linejoin:round"
+       id="rect233"
+       width="7.4083333"
+       height="7.4083333"
+       x="2.1166668"
+       y="1.0583334"
+       ry="0.79374999"
+       inkscape:export-filename="favicon.png"
+       inkscape:export-xdpi="438.85715"
+       inkscape:export-ydpi="438.85715" />
+    <path
+       style="opacity:0.580328;fill:#000000;fill-opacity:1;stroke:#010101;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter19989)"
+       d="M 8.4178554,6.1628719 8.3493214,6.406981 c 0,0 -1.0542876,1.2516243 -2.5016449,1.2017074 C 4.5901777,7.5653193 3.7945467,6.7985502 3.5710509,5.8957258 3.2996948,4.7995667 3.5039815,2.9707292 5.3471893,2.1909813 c 1.1257378,-0.4762304 2.492466,0.056108 3.051002,0.8280899 0,0 -0.8062103,0.7078921 -1.120829,1.2191474 0,0 -0.1752309,0.072661 -0.026039,-0.1583372 C 7.4943015,3.7036726 6.845895,2.5505647 6.2256458,2.1596295 5.4390996,2.2382842 4.5462159,4.1979892 5.1638082,5.6990891 5.361387,6.1793179 5.7999656,6.6243229 6.2475189,6.7526924 7.0629883,6.9865895 8.0242848,6.6199217 8.4178554,6.1628719 Z"
+       id="path5416"
+       sodipodi:nodetypes="ccsssccscssc" />
+    <path
+       style="fill:#1c1a17;fill-opacity:1;stroke:#1e1b18;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 8.2510037,5.9960202 -0.068534,0.2441091 c 0,0 -1.0542876,1.2516243 -2.5016449,1.2017074 C 4.423326,7.3984676 3.627695,6.6316985 3.4041992,5.7288741 3.1328431,4.632715 3.3371298,2.8038775 5.1803376,2.0241296 c 1.1257378,-0.4762304 2.492466,0.056108 3.051002,0.8280899 0,0 -0.8062103,0.7078921 -1.120829,1.2191474 0,0 -0.1752309,0.072661 -0.026039,-0.1583372 C 7.3274498,3.5368209 6.6790433,2.383713 6.0587941,1.9927778 5.2722479,2.0714325 4.3793642,4.0311375 4.9969565,5.5322374 5.1945353,6.0124662 5.6331139,6.4574712 6.0806672,6.5858407 6.8961366,6.8197378 7.8574331,6.45307 8.2510037,5.9960202 Z"
+       id="path19987"
+       sodipodi:nodetypes="ccsssccscssc" />
+  </g>
+</svg>

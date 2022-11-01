@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rank {
+  VISITOR
+  WRITER
+  MODERATOR
+  STAFF
+  ADMIN
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  password  Password?
+  // notes    Note[]
+
+  rank Rank @default(WRITER)
+
+  posts     Post[]      @relation("PostToAuthor")
+  inbox     Post[]      @relation("PostToUsers")
+  reactions Reaction[]
+  following Following[]
+}
+
+model Password {
+  hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+// A channel is a subsection of the forum (like a subreddit).
+model Channel {
+  id String @id @default(cuid())
+
+  // Name of this channel.
+  name String
+
+  // Description for this channel.
+  description String
+
+  // Whether this channel is visible to unauthenticated users.
+  public Boolean
+
+  // Posts in this channel
+  posts  Post[] @relation("PostToChannels")
+  postId Int?
+
+  // Embargo time, in seconds, for posts in this channel. Default is site.
+  postDelay Int?
+}
+
+enum PostStatus {
+  DRAFT // Saved as draft
+  QUEUED // Waiting to publish
+  PUBLISHED // Visible
+  READ // Read by recipient (only for posts to individual users)
+  DELETED // Deleted by author
+}
+
+model Post {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // Time of most recent edit or reply
+  editedAt  DateTime @default(now()) // Time of most recent edit.
+  postedAt DateTime @default(now()) // Time when post becomes visible.
+
+  // Author of the post
+  author   User   @relation("PostToAuthor", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId String
+
+  // If present, indicates the author has licensed this post under the given license.
+  license String?
+
+  // Title of the post
+  title String
+
+  // Slug
+  slug String?
+
+  // Rich text content of the post (markdown).
+  body String
+
+  // Post publications
+  status PostStatus @default(DRAFT)
+
+  // # List of hash tags
+  tags String[]
+
+  // # ID of users mentioned in the body
+  // mentions User[] @relation("mentions", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  // # List of recipients that are individual users.
+  toUsers User[] @relation("PostToUsers")
+
+  // List of recipients that are channels.
+  toChannels Channel[] @relation("PostToChannels")
+
+  // Number of times this post has been viewed.
+  numViews Int @default(0)
+
+  // List of replies to this post.
+  replies Post[] @relation("PostReplies")
+
+  // If this is a reply, then this is a reference to the immediate parent
+  parent   Post? @relation("PostReplies", fields: [parentId], references: [id])
+  parentId Int?
+
+  // List of transitive descendants of this post
+  origin Post[] @relation("Threads")
+
+  // A reference to the originating post in this thread.
+  thread   Post? @relation("Threads", fields: [threadId], references: [id])
+  threadId Int?
+
+  // # List of user ids for users who have replied to this post (denormalized).
+  // # This is used to display avatars on the summary page.
+  // replyAuthors: [ID!]
+
+  // Reactions to this post - likes, flags, up/down votes.
+  reactions Reaction[]
+
+  // Ids of users that are following (subscribed to) this post.
+  // These users will get a notification when updates happen.
+  // Author is automatically added to this list, but can unfollow manually.
+  following Following[]
+
+  // # Whether this post should always appear at the top of the list of posts.
+  sticky Boolean @default(false)
+}
+
+// Users reacting to posts or replies.
+model Reaction {
+  // The kind of reaction (like, thumbs up, flagged, etc.)
+  kind String
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId Int
+
+  // List of users that applied this reaction.
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  @@id([kind, postId, userId])
+}
+
+// Users following posts
+model Following {
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId Int
+
+  // List of users that applied this reaction.
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  @@id([postId, userId])
+}

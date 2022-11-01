@@ -1,0 +1,7 @@
+{
+  // Display name of the site
+  "name": "Colloquy",
+
+  // Time, in seconds, that new posts are held in queue before posting.
+  "postDelay": 3600
+}

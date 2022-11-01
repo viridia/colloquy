@@ -4,7 +4,10 @@ dist
 .output
 .vercel
 .netlify
+.env
 netlify
+postgres-data
+prisma/migrations
 
 # dependencies
 /node_modules

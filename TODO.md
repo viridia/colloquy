@@ -1,6 +1,6 @@
 # TODO
 
-* Prism
-* Mongo
+* Prisma
 * Social Login
 * ProseMirror
+* Avatar Widget

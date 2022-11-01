@@ -1,10 +1,11 @@
-import { Page, PageHeader } from 'dolmen';
+import { Page } from 'dolmen';
 import { Show } from 'solid-js';
 import { useParams, useRouteData } from 'solid-start';
 import { FormError } from 'solid-start/data';
 import { createServerAction$, createServerData$, redirect } from 'solid-start/server';
 import { db } from '~/db';
 import { createUserSession, getUser, login, register } from '~/db/session';
+import { AppHeader } from '../components/AppHeader';
 
 function validateUsername(username: unknown) {
   if (typeof username !== 'string' || username.length < 3) {
@@ -87,7 +88,7 @@ export default function Login() {
 
   return (
     <Page>
-      <PageHeader>Login</PageHeader>
+      <AppHeader />
       <Form>
         <input type="hidden" name="redirectTo" value={params.redirectTo ?? '/'} />
         <fieldset>
