@@ -1,0 +1,39 @@
+# A collection of posts
+type Channel {
+  # Unique ID for this channel.
+  id: ID!
+
+  # Display name of this channel
+  name: String!
+
+  # Short description of the purpose of this channel
+  description: String!
+
+  # Color used when displaying the channel badge
+  color: String!
+
+  # If true, all users can see the content of this channel
+  public: Boolean!
+
+  # Optional delay period when posting to this channel, in seconds. Any post that is published
+  # to this channel will be embargoed for this long. Defaults to site configuration value.
+  postDelay: Int
+}
+
+input ChannelInput {
+  name: String!
+  description: String!
+  color: String!
+  public: Boolean
+  postDelay: Int
+}
+
+type Query {
+  # Return a list of all channels visible to this user.
+  channels: [Channel!]!
+}
+
+type Mutation {
+  # Create a new channel
+  createChannel(channel: ChannelInput!): Channel
+}

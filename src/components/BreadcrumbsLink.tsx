@@ -1,16 +1,16 @@
 import { A } from '@solidjs/router';
-import { BreadcrumbsItem, css } from 'dolmen';
+import { Breadcrumbs } from 'dolmen';
 import { ParentComponent } from 'solid-js';
 
-const linkCss = css({
-  textDecoration: 'none',
-  color: '$textLink',
-  fontWeight: 'normal',
+// const linkCss = css({
+//   textDecoration: 'none',
+//   color: '$textLink',
+//   fontWeight: 'normal',
 
-  '&:hover': {
-    textDecoration: 'underline',
-  },
-});
+//   '&:hover': {
+//     textDecoration: 'underline',
+//   },
+// });
 
 interface Props {
   href: string;
@@ -18,10 +18,8 @@ interface Props {
 
 export const BreadcrumbsLink: ParentComponent<Props> = props => {
   return (
-    <BreadcrumbsItem>
-      <A class={linkCss()} href={props.href}>
-        {props.children}
-      </A>
-    </BreadcrumbsItem>
+    <Breadcrumbs.Link as={A} href={props.href}>
+      {props.children}
+    </Breadcrumbs.Link>
   );
 };

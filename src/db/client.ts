@@ -1,20 +1,21 @@
 import { Channel, Post, PrismaClient } from '@prisma/client';
+import { ChannelInput } from '../graphql/types';
 
-const prisma = new PrismaClient();
+export const db = new PrismaClient();
 
 export async function fetchUsers() {
-  return await prisma.user.findMany();
+  return await db.user.findMany();
   // console.log(allUsers);
 }
 
-export async function fetchChannels() {
+export function fetchChannels(): Promise<Channel[]> {
   // Filter by access.
-  return await prisma.channel.findMany();
+  return db.channel.findMany();
 }
 
 export async function createChannel(channelInput: Channel) {
   // Verify author?
-  const channelRecord = await prisma.channel.create({
+  const channelRecord = await db.channel.create({
     data: channelInput,
   });
   return channelRecord;
@@ -30,7 +31,7 @@ export async function postToChannel(postInput: PostInput, channel: string) {
   //     id: channel,
   //   },
   // });
-  const postRecord = await prisma.post.create({
+  const postRecord = await db.post.create({
     data: {
       ...postInput,
       status: 'QUEUED',

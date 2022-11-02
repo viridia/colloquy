@@ -2,50 +2,98 @@ import {
   Alert,
   Button,
   CheckBox,
-  ColorSwatch,
   FormField,
   Group,
   Input,
   Modal,
-  Stack,
   TextArea,
+  createFormValidation,
 } from 'dolmen';
-import { createSignal, For, Show, VoidComponent } from 'solid-js';
+import { createEffect, createSignal, Show, useContext, VoidComponent } from 'solid-js';
 import { createRouteAction } from 'solid-start';
-import { channelColors } from './channelColors';
+import { GraphQLContext, decodeErrors } from '../graphql/client';
+import { Channel, MutationCreateChannelArgs } from '../graphql/types';
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
+export const gql = (query: TemplateStringsArray) =>
+  query
+    .join(' ')
+    .replace(/#.+\r?\n|\r/g, '')
+    .replace(/\r?\n|\r/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+export const createChannelMutation = gql`
+  mutation CreateChannel($channel: ChannelInput!) {
+    createChannel(channel: $channel) {
+      id
+      name
+      description
+    }
+  }
+`;
+
 const CreateChannelDialog: VoidComponent<Props> = props => {
   const [channelColor, setChannelColor] = createSignal('#CFD8DC');
   const [channelIsPublic, setChannelIsPublic] = createSignal(true);
   const [error, setError] = createSignal('');
+  const { errors, formProps } = createFormValidation<{
+    channelName: string;
+    description: string;
+  }>({
+    channelName: {
+      required: (data: string) => data.length > 0,
+    },
+  });
+  const gqlClient = useContext(GraphQLContext);
 
   const [creating, { Form }] = createRouteAction(async (formData: FormData) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log(Array.from(formData.keys()));
-    console.log(formData.get('channelName'));
-    setError('Invalid channel name');
-    const username = formData.get('username');
-    if (username === 'admin') {
-      // return redirect('/admin');
-    } else {
-      throw new Error('Invalid username');
+    setError('');
+    try {
+      const resp = await gqlClient.request<Channel, MutationCreateChannelArgs>(
+        createChannelMutation,
+        {
+          channel: {
+            name: formData.get('channelName') as string,
+            description: formData.get('description') as string,
+            public: Boolean(formData.get('public')),
+            color: formData.get('color') as string,
+          },
+        }
+      );
+
+      console.log(resp);
+
+      props.onClose();
+    } catch (clientError) {
+      setError(decodeErrors(clientError.response));
     }
-    // return redirect('/home');
-    props.onClose();
+  });
+
+  createEffect(() => {
+    if (props.open) {
+      creating.clear();
+    }
   });
 
   return (
-    <Form>
+    <Form {...formProps}>
       <Modal open={props.open} onClose={props.onClose} withClose size="sm">
         <Modal.Header>New Channel</Modal.Header>
         <Modal.Body gap="xl">
-          <FormField title="Channel Name">
-            <Input name="channelName" />
+          <FormField
+            title="Channel Name"
+            error={
+              {
+                required: 'Channel name is required.',
+              }[errors.channelName]
+            }
+          >
+            <Input name="channelName" max={24} autofocus />
           </FormField>
           <FormField title="Channel Description">
             <TextArea h="5rem" name="description" />
@@ -61,33 +109,25 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
               Public channel
             </CheckBox>
           </FormField>
-          <Group gap="md">
-            <For each={channelColors}>
-              {shades => (
-                <Stack gap="md" flex="1 1 0">
-                  <For each={shades}>
-                    {color => (
-                      <ColorSwatch
-                        color={color}
-                        alignSelf="stretch"
-                        selected={color === channelColor()}
-                        onClick={() => {
-                          setChannelColor(color);
-                        }}
-                      />
-                    )}
-                  </For>
-                </Stack>
-              )}
-            </For>
-            <input type="hidden" name="color" value={channelColor()} />
+          <Group gap="lg">
+            <label>
+              <input
+                type="color"
+                name="color"
+                value={channelColor()}
+                onChange={e => {
+                  setChannelColor(e.currentTarget.value);
+                }}
+              />
+              Channel Color
+            </label>
           </Group>
           <Show when={error()}>
             <Alert severity="error">{error()}</Alert>
           </Show>
         </Modal.Body>
         <Modal.Footer>
-          <Button disabled={creating.pending} onClick={() => props.onClose()}>
+          <Button disabled={creating.pending} onClick={() => props.onClose()} type="button">
             Cancel
           </Button>
           <Button color="primary" disabled={creating.pending} type="submit">

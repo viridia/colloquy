@@ -1,8 +1,9 @@
-import { Button, Group, Spacer } from 'dolmen/dist/mjs';
-import { createSignal, lazy } from 'solid-js';
+import { Button, EmptyResult, Group, Spacer } from 'dolmen/dist/mjs';
+import { createSignal, lazy, Show } from 'solid-js';
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
 import { fetchChannels } from '../../db/client';
+import { AddCircle } from '../../icons';
 
 const CreateChannelDialog = lazy(() => import('../../components/CreateChannelDialog'));
 
@@ -28,15 +29,20 @@ export default function AdminChannels() {
             setOpenCreate(true);
           }}
         >
+          <AddCircle />
           New Channel
         </Button>
       </Group>
-      <ul>
-        <li>Fake</li>
-        {channels()?.map(channel => (
-          <li>{channel.name}</li>
-        ))}
-      </ul>
+      <Show
+        when={channels()?.length > 0}
+        fallback={<EmptyResult>No channels created yet.</EmptyResult>}
+      >
+        <ul>
+          {channels()?.map(channel => (
+            <li>{channel.name}</li>
+          ))}
+        </ul>
+      </Show>
       <CreateChannelDialog open={openCreate()} onClose={() => setOpenCreate(false)} />
     </div>
   );

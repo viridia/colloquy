@@ -56,6 +56,9 @@ model Channel {
   // Whether this channel is visible to unauthenticated users.
   public Boolean
 
+  // Barge color to display for this channel.
+  color String
+
   // Posts in this channel
   posts  Post[] @relation("PostToChannels")
   postId Int?
