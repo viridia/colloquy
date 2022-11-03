@@ -1,4 +1,4 @@
-import { Button, EmptyResult, Group, Spacer } from 'dolmen/dist/mjs';
+import { Button, EmptyResult, Group, Spacer, Table } from 'dolmen';
 import { createSignal, lazy, Show } from 'solid-js';
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
@@ -42,6 +42,26 @@ export default function AdminChannels() {
             <li>{channel.name}</li>
           ))}
         </ul>
+        <Table>
+          <Table.Head>
+            <Table.Row>
+              <Table.Cell>Channel</Table.Cell>
+              <Table.Cell>Description</Table.Cell>
+              <Table.Cell>Public?</Table.Cell>
+              <Table.Cell>Color</Table.Cell>
+            </Table.Row>
+          </Table.Head>
+          <Table.Body>
+            {channels()?.map(channel => (
+              <Table.Row>
+                <Table.Cell>{channel.name}</Table.Cell>
+                <Table.Cell>{channel.description}</Table.Cell>
+                <Table.Cell>{channel.public}</Table.Cell>
+                <Table.Cell>{channel.color}</Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
       </Show>
       <CreateChannelDialog open={openCreate()} onClose={() => setOpenCreate(false)} />
     </div>

@@ -3,16 +3,17 @@ import {
   Button,
   CheckBox,
   FormField,
-  Group,
   Input,
   Modal,
   TextArea,
   createFormValidation,
+  ColorGrid,
 } from 'dolmen';
 import { createEffect, createSignal, Show, useContext, VoidComponent } from 'solid-js';
 import { createRouteAction } from 'solid-start';
 import { GraphQLContext, decodeErrors } from '../graphql/client';
 import { Channel, MutationCreateChannelArgs } from '../graphql/types';
+import { channelColors } from './channelColors';
 
 interface Props {
   open: boolean;
@@ -38,7 +39,6 @@ export const createChannelMutation = gql`
 `;
 
 const CreateChannelDialog: VoidComponent<Props> = props => {
-  const [channelColor, setChannelColor] = createSignal('#CFD8DC');
   const [channelIsPublic, setChannelIsPublic] = createSignal(true);
   const [error, setError] = createSignal('');
   const { errors, formProps } = createFormValidation<{
@@ -109,19 +109,16 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
               Public channel
             </CheckBox>
           </FormField>
-          <Group gap="lg">
-            <label>
-              <input
-                type="color"
-                name="color"
-                value={channelColor()}
-                onChange={e => {
-                  setChannelColor(e.currentTarget.value);
-                }}
-              />
-              Channel Color
-            </label>
-          </Group>
+          <FormField title="Channel Badge Color">
+            <ColorGrid
+              name="color"
+              colors={channelColors}
+              columnMajor
+              rows={4}
+              gap="sm"
+              value="#CFD8DC"
+            />
+          </FormField>
           <Show when={error()}>
             <Alert severity="error">{error()}</Alert>
           </Show>
