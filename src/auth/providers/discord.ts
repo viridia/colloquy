@@ -17,8 +17,7 @@ export default (config: IDiscordConfig): ILoginProvider => {
         redirect_uri: config.callbackUrl,
         response_type: 'code',
         scope: ['identify', 'email', ...(config.scopes ?? [])].join(' '),
-        state: state,
-        nonce: crypto.randomUUID(),
+        state,
       }).toString();
       return loginUrl;
     },

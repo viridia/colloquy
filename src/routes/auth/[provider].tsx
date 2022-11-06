@@ -19,8 +19,10 @@ export function routeData({ params }: RouteDataArgs) {
 
       const storage = getSessionStorage();
       const session = await storage.getSession(request.headers.get('Cookie'));
-      const sessionState = session.get('state');
+      const sessionState = session.get(SessionKey.State);
+      const nonce = session.get(SessionKey.Nonce);
       session.unset(SessionKey.State);
+      session.unset(SessionKey.Nonce);
       session.set(SessionKey.AuthProvider, provider);
 
       const code = url.searchParams.get('code');
@@ -40,7 +42,7 @@ export function routeData({ params }: RouteDataArgs) {
       const loginProvider = getLoginProvider(provider);
       if (loginProvider) {
         try {
-          const userInfo = await loginProvider.fetchProfile(code);
+          const userInfo = await loginProvider.fetchProfile(code, nonce);
           session.set(SessionKey.Name, userInfo.name);
           session.set(SessionKey.Email, userInfo.email);
           session.set(SessionKey.Avatar, userInfo.avatar);

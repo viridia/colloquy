@@ -7,8 +7,8 @@ export interface IProfileData {
 
 export interface ILoginProvider {
   id: string;
-  getAuthUri(state: string): URL;
-  fetchProfile(code: string): Promise<IProfileData>;
+  getAuthUri(state: string, nonce: string): URL;
+  fetchProfile(code: string, nonce: string): Promise<IProfileData>;
 }
 
 const loginProviders: Record<string, ILoginProvider> = {};

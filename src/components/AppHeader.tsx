@@ -2,7 +2,8 @@ import { useLocation, useNavigate } from '@solidjs/router';
 import { Breadcrumbs, BreadcrumbsItem, createDialogState, css, Menu, Page, Spacer } from 'dolmen';
 import { createEffect, JSX, lazy, ParentComponent, Show, Suspense, VoidComponent } from 'solid-js';
 import { createServerAction$, redirect } from 'solid-start/server';
-import { getSessionStorage, useSession } from '../auth/session';
+import { getSessionStorage } from '../auth/session';
+import { useClientSession } from '../auth/sessionContext';
 import { BreadcrumbsLink } from './BreadcrumbsLink';
 import { DarkModeToggle } from './DarkModeToggle';
 import { SignInButton } from './SignInButton';
@@ -29,7 +30,7 @@ interface AppHeaderProps {
 // TODO: Replace title with name of forum. (site params)
 export const AppHeader: VoidComponent<AppHeaderProps> = props => {
   const profileDialogState = createDialogState();
-  const session = useSession();
+  const session = useClientSession();
   const location = useLocation();
 
   const [, logout] = createServerAction$(async (_, { request }) => {
@@ -43,9 +44,7 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
   });
 
   createEffect(() => {
-    if (session.needsProfile) {
-      profileDialogState.setOpen(true);
-    }
+    profileDialogState.setOpen(session.needsProfile);
   });
 
   return (

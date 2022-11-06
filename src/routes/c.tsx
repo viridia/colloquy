@@ -3,7 +3,7 @@ import { createServerData$ } from 'solid-start/server';
 import { Page } from 'dolmen';
 import { fetchChannels, fetchUsers } from '../db/client';
 import { AppHeader } from '../components/AppHeader';
-import { useSession } from '../auth/session';
+// import { useSession } from '../auth/sessionContext';
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {

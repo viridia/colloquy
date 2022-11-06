@@ -11,7 +11,7 @@ import {
 } from 'dolmen';
 import { createSignal, Show, VoidComponent } from 'solid-js';
 import { createRouteAction } from 'solid-start';
-import { useSession } from '../auth/session';
+import { useClientSession } from '../auth/sessionContext';
 import { decodeErrors } from '../graphql/client';
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 
 const CreateProfileDialog: VoidComponent<Props> = props => {
   const [error, setError] = createSignal('');
-  const session = useSession();
+  const session = useClientSession();
 
   const { errors, formProps } = createFormValidation<{
     username: string;

@@ -6,18 +6,20 @@ import { getLoginProvider } from '../../auth/provider';
 export async function GET({ request }: APIEvent) {
   const url = new URL(request.url);
   const state = crypto.randomBytes(512 / 8).toString('base64'); // 512 bits
+  const nonce = crypto.randomBytes(16).toString('base64');
   const storage = getSessionStorage();
   const session = await storage.getSession(request.headers.get('Cookie'));
   session.set(SessionKey.State, state);
+  session.set(SessionKey.Nonce, nonce);
 
-  const provider = url.searchParams.get('provider');
-  const loginProvider = getLoginProvider(provider);
-  if (!loginProvider) {
-    throw new Error(`Invalid login provider id: ${provider}`);
+  const providerId = url.searchParams.get('provider');
+  const provider = getLoginProvider(providerId);
+  if (!provider) {
+    throw new Error(`Invalid login provider id: ${providerId}`);
   }
 
-  if (loginProvider) {
-    const loginUrl = loginProvider.getAuthUri(state);
+  if (provider) {
+    const loginUrl = provider.getAuthUri(state, nonce);
     try {
       return new Response(
         JSON.stringify({

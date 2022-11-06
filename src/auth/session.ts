@@ -1,5 +1,5 @@
-import { createContext, useContext } from 'solid-js';
-import { createCookieSessionStorage } from 'solid-start';
+import { isServer } from 'solid-js/web';
+import { createCookieSessionStorage, SessionStorage } from 'solid-start';
 
 /** Session object. This is stored in a cookie. It can be in one of several states:
     * Pre-auth: If the user has not signed in, the session will be undefined.
@@ -18,6 +18,9 @@ import { createCookieSessionStorage } from 'solid-start';
 export enum SessionKey {
   /** Random string used to prevent replay attacks in OAuth/OpenID flow. */
   State = 'state',
+
+  /** Random string used to prevent replay attacks in OAuth/OpenID flow. */
+  Nonce = 'nonce',
 
   /** Primary key of users table, basis for permission checks. Not visible on client. */
   UserId = 'userId',
@@ -38,27 +41,33 @@ export enum SessionKey {
   AuthProvider = 'provider',
 }
 
-const storage = createCookieSessionStorage({
-  cookie: {
-    name: 'CQ_session',
-    // secure doesn't work on localhost for Safari
-    // https://web.dev/when-to-use-local-https/
-    secure: true,
-    secrets: [process.env.SESSION_SECRET],
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 30,
-    httpOnly: true,
-  },
-});
+let storage: SessionStorage;
 
 export function getSessionStorage() {
+  if (isServer && !storage) {
+    if (!process.env.SESSION_SECRET) {
+      throw new Error('Missing SESSION_SECRET');
+    }
+    storage = createCookieSessionStorage({
+      cookie: {
+        name: 'CQ_session',
+        // secure doesn't work on localhost for Safari
+        // https://web.dev/when-to-use-local-https/
+        secure: true,
+        secrets: [process.env.SESSION_SECRET],
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 60 * 60 * 24 * 30,
+        httpOnly: true,
+      },
+    });
+  }
   return storage;
 }
 
 /** Session properties that are exposed to client - does not include userId, which
     is what authorization decisions are based on. */
-export interface ISession {
+export interface IClientSession {
   /** User is fully signed in and has a profile. */
   readonly isSignedIn: boolean;
   /** User has been authenticated but has not set up a profile. */
@@ -76,8 +85,8 @@ export interface ISession {
 }
 
 /** Returns a session object which is visible on the client. Only includes non-secret data. */
-export async function getClientSession(request: Request): Promise<ISession> {
-  const session = await storage.getSession(request.headers.get('Cookie'));
+export async function getClientSession(request: Request): Promise<IClientSession> {
+  const session = await getSessionStorage().getSession(request.headers.get('Cookie'));
   return {
     get isSignedIn() {
       return Boolean(session.get(SessionKey.Username));
@@ -108,6 +117,3 @@ export async function getClientSession(request: Request): Promise<ISession> {
     },
   };
 }
-
-export const SessionContext = createContext<ISession>();
-export const useSession = () => useContext(SessionContext);

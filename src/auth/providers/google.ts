@@ -10,20 +10,20 @@ interface IGoogleConfig {
 export default (config: IGoogleConfig): ILoginProvider => {
   return {
     id: 'google',
-    getAuthUri(state) {
+    getAuthUri(state, nonce) {
       const loginUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
       loginUrl.search = new URLSearchParams({
         client_id: config.clientId,
         redirect_uri: config.callbackUrl,
         response_type: 'code',
         scope: ['openid', 'email', 'profile', ...(config.scopes ?? [])].join(' '),
-        state: state,
-        nonce: crypto.randomUUID(),
+        state,
+        nonce,
       }).toString();
       return loginUrl;
     },
 
-    async fetchProfile(code: string): Promise<IProfileData> {
+    async fetchProfile(code, nonce): Promise<IProfileData> {
       const authUrl = new URL('https://oauth2.googleapis.com/token');
       const params = new URLSearchParams();
       params.set('client_id', config.clientId);
@@ -45,7 +45,6 @@ export default (config: IGoogleConfig): ILoginProvider => {
       }
 
       const json = await resp.json();
-      console.log(json);
       if (json.error) {
         throw new Error(json.error);
       }
@@ -57,6 +56,10 @@ export default (config: IGoogleConfig): ILoginProvider => {
       const userData = parseJwt(json.id_token);
       if (typeof userData.email !== 'string') {
         throw new Error('No email in login provider response');
+      }
+
+      if (userData.nonce !== nonce) {
+        throw new Error('Nonce does not match, possible replay attack.');
       }
 
       return {

@@ -16,7 +16,8 @@ import { createUserSettings, UserSettingsContext } from './hooks/createUserSetti
 import { dark } from 'dolmen';
 import { createServerData$ } from 'solid-start/server';
 import { graphQLClient, GraphQLContext } from './graphql/client';
-import { getClientSession, SessionContext } from './auth/session';
+import { getClientSession } from './auth/session';
+import { SessionContext } from './auth/sessionContext';
 // import "./root.css";
 
 export default function Root() {

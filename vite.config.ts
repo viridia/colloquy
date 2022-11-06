@@ -6,5 +6,5 @@ export default defineConfig({
   ssr: {
     external: ['@prisma/client', '@graphql-tools/schema', 'graphql-request'],
   },
-  // envDir: __dirname,
+  envDir: __dirname,
 });
