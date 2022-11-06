@@ -4,7 +4,6 @@ import {
   createFormValidation,
   CssTransitionState,
   FormField,
-  Group,
   Input,
   Modal,
   Title,
@@ -18,6 +17,7 @@ import { decodeErrors } from '../graphql/client';
 interface Props {
   state: CssTransitionState;
   onClose: () => void;
+  onCancel: () => void;
 }
 
 const CreateProfileDialog: VoidComponent<Props> = props => {
@@ -63,7 +63,7 @@ const CreateProfileDialog: VoidComponent<Props> = props => {
     <Form {...formProps}>
       <Modal.Dialog
         state={props.state}
-        onClose={props.onClose}
+        onClose={props.onCancel}
         withClose
         size="xs"
         aria-label="Welcome"
@@ -103,16 +103,11 @@ const CreateProfileDialog: VoidComponent<Props> = props => {
             <Alert severity="error">{error()}</Alert>
           </Show>
         </Modal.Body>
-        <Modal.Footer flexDirection="column" alignItems="end">
-          <Group gap="lg">
-            <Button disabled={creating.pending} onClick={() => props.onClose()} type="button">
-              Cancel
-            </Button>
-            <Button color="primary" disabled={creating.pending} type="submit">
-              Create
-            </Button>
-          </Group>
-          <Text size="sm">
+        <Modal.Footer flexDirection="column" alignItems="end" gap="xl">
+          <Button color="primary" disabled={creating.pending} type="submit">
+            Create Your Account
+          </Button>
+          <Text size="xs">
             By registering, you agree to the [privacy policy] and [terms of service] (TODO).
           </Text>
         </Modal.Footer>

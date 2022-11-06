@@ -63,7 +63,7 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
       <DarkModeToggle />
       <Show when={profileDialogState.visible}>
         <Suspense>
-          <CreateProfileDialog {...profileDialogState.modalProps} />
+          <CreateProfileDialog {...profileDialogState.modalProps} onCancel={() => logout()} />
         </Suspense>
       </Show>
       <Suspense>
