@@ -16,7 +16,6 @@ import { Navigate } from 'solid-start';
 
 export default function Home() {
   // const user = useRouteData<typeof routeData>();
-  // const [, { Form }] = createServerAction$((f: FormData, { request }) => logout(request));
 
   return (
     <Navigate href="/t" />

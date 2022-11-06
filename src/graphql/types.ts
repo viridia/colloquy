@@ -45,6 +45,12 @@ export type MutationCreateChannelArgs = {
 export type Query = {
   __typename?: 'Query';
   channels: Array<Channel>;
+  usernameExists: Scalars['Boolean'];
+};
+
+
+export type QueryUsernameExistsArgs = {
+  userName: Scalars['String'];
 };
 
 
@@ -154,6 +160,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   channels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType>;
+  usernameExists?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<QueryUsernameExistsArgs, 'userName'>>;
 };
 
 export type Resolvers<ContextType = any> = {

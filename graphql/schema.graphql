@@ -31,6 +31,9 @@ input ChannelInput {
 type Query {
   # Return a list of all channels visible to this user.
   channels: [Channel!]!
+
+  # Detect if a given username exists
+  usernameExists(userName: String!): Boolean!
 }
 
 type Mutation {

@@ -8,7 +8,7 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "format": "prettier --write ./src",
-    "start": "solid-start start",
+    "start": "solid-start start --port 5005",
     "test": "npm run test:format && npm run test:lint && npm run test:compile",
     "test:format": "prettier --check ./src",
     "test:compile": "tsc --noEmit --project ./tsconfig.json",

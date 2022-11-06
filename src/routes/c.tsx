@@ -1,26 +1,27 @@
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
-import { getUser } from '~/db/session';
 import { Page } from 'dolmen';
 import { fetchChannels, fetchUsers } from '../db/client';
 import { AppHeader } from '../components/AppHeader';
+import { useSession } from '../auth/session';
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {
-    const user = await getUser(request);
+    // const user = await getUser(request);
 
-    await fetchUsers();
+    // await fetchUsers();
     const channels = await fetchChannels();
 
     // if (!user) {
     //   throw redirect('/login');
     // }
 
-    return { user, channels };
+    return { channels };
   });
 }
 
 export default function Channels() {
+  // const session = useSession();
   const data = useRouteData<typeof routeData>();
 
   return (

@@ -1,8 +1,8 @@
-import { Outlet } from 'solid-start';
 import { Page } from 'dolmen';
+import { Outlet } from 'solid-start';
 import { AppHeader } from '../components/AppHeader';
 
-export default function Threads() {
+export default function Channels() {
   return (
     <Page>
       <AppHeader />

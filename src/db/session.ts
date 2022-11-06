@@ -1,7 +1,7 @@
-import { createContext, useContext } from 'solid-js';
 import { redirect } from 'solid-start/server';
 import { createCookieSessionStorage } from 'solid-start/session';
-import { db } from '.';
+import { db } from './index';
+import { db as prisma } from './client';
 
 type LoginForm = {
   username: string;
@@ -22,7 +22,30 @@ export async function login({ username, password }: LoginForm) {
   return user;
 }
 
-const sessionSecret = import.meta.env.SESSION_SECRET;
+export async function createSession(name: string, email: string) {
+  let user = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+  });
+  console.log(user);
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        displayName: name,
+        email,
+        username: '',
+      },
+    });
+  }
+
+  // const user = await db.user.findUnique({ where: { username } });
+  // if (!user) return null;
+  // const isCorrectPassword = password === user.password;
+  // if (!isCorrectPassword) return null;
+  // return user;
+}
 
 const storage = createCookieSessionStorage({
   cookie: {
@@ -103,5 +126,5 @@ export interface ISession {
   // rank:
 }
 
-export const SessionContext = createContext<ISession | null>();
-export const useSession = () => useContext(SessionContext);
+// export const SessionContext = createContext<ISession | null>();
+// export const useSession = () => useContext(SessionContext);

@@ -1,9 +1,11 @@
 import { useLocation, useNavigate } from '@solidjs/router';
-import { Breadcrumbs, BreadcrumbsItem, Button, css, Menu, Page, Spacer } from 'dolmen';
-import { JSX, ParentComponent, Show, VoidComponent } from 'solid-js';
-import { useSession } from '../db/session';
+import { Breadcrumbs, BreadcrumbsItem, createDialogState, css, Menu, Page, Spacer } from 'dolmen';
+import { createEffect, JSX, lazy, ParentComponent, Show, Suspense, VoidComponent } from 'solid-js';
+import { createServerAction$, redirect } from 'solid-start/server';
+import { getSessionStorage, useSession } from '../auth/session';
 import { BreadcrumbsLink } from './BreadcrumbsLink';
 import { DarkModeToggle } from './DarkModeToggle';
+import { SignInButton } from './SignInButton';
 
 const avatarCss = css({
   display: 'flex',
@@ -18,14 +20,34 @@ const NavMenuItem: ParentComponent<{ href: string }> = props => {
   return <Menu.Item onClick={() => navigate(props.href)}>{props.children}</Menu.Item>;
 };
 
+const CreateProfileDialog = lazy(() => import('./CreateProfileDialog'));
+
 interface AppHeaderProps {
   breadcrumbs?: JSX.Element[];
 }
 
 // TODO: Replace title with name of forum. (site params)
 export const AppHeader: VoidComponent<AppHeaderProps> = props => {
+  const profileDialogState = createDialogState();
   const session = useSession();
   const location = useLocation();
+
+  const [, logout] = createServerAction$(async (_, { request }) => {
+    const storage = getSessionStorage();
+    const session = await storage.getSession(request.headers.get('Cookie'));
+    return redirect('/', {
+      headers: {
+        'Set-Cookie': await storage.destroySession(session),
+      },
+    });
+  });
+
+  createEffect(() => {
+    if (session.needsProfile) {
+      profileDialogState.setOpen(true);
+    }
+  });
+
   return (
     <Page.Header gap="md">
       <Breadcrumbs>
@@ -35,25 +57,31 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
         >
           <BreadcrumbsLink href="/t">Colloquy</BreadcrumbsLink>
         </Show>
-        {props.breadcrumbs}
+        {props.breadcrumbs ?? []}
       </Breadcrumbs>
       <Spacer />
       <DarkModeToggle />
-      <Menu>
-        <Menu.Button icon round>
-          <span class={avatarCss()}>DPJ</span>
-        </Menu.Button>
-        <Menu.List placement="bottom-end">
-          <NavMenuItem href="/u/me">Profile&hellip;</NavMenuItem>
-          <NavMenuItem href="/settings">Settings&hellip;</NavMenuItem>
-          <NavMenuItem href="/admin">Site Admin&hellip;</NavMenuItem>
-          <Menu.Divider />
-          <NavMenuItem href="/admin">Sign Out</NavMenuItem>
-        </Menu.List>
-      </Menu>
-      <Show when={session?.username} fallback={<Button color="primary">Sign In</Button>}>
-        <Button>Sign Out</Button>
+      <Show when={profileDialogState.visible}>
+        <Suspense>
+          <CreateProfileDialog {...profileDialogState.modalProps} />
+        </Suspense>
       </Show>
+      <Suspense>
+        <Show when={session?.email} fallback={<SignInButton />}>
+          <Menu>
+            <Menu.Button icon round>
+              <span class={avatarCss()}>DPJ</span>
+            </Menu.Button>
+            <Menu.List placement="bottom-end">
+              <NavMenuItem href="/u/me">Profile&hellip;</NavMenuItem>
+              <NavMenuItem href="/settings">Settings&hellip;</NavMenuItem>
+              <NavMenuItem href="/admin">Site Admin&hellip;</NavMenuItem>
+              <Menu.Divider />
+              <Menu.Item onClick={() => logout()}>Sign Out</Menu.Item>
+            </Menu.List>
+          </Menu>
+        </Show>
+      </Suspense>
     </Page.Header>
   );
 };

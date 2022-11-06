@@ -1,5 +1,4 @@
 import { Channel, Post, PrismaClient } from '@prisma/client';
-import { ChannelInput } from '../graphql/types';
 
 export const db = new PrismaClient();
 
@@ -13,13 +12,13 @@ export function fetchChannels(): Promise<Channel[]> {
   return db.channel.findMany();
 }
 
-export async function createChannel(channelInput: Channel) {
-  // Verify author?
-  const channelRecord = await db.channel.create({
-    data: channelInput,
-  });
-  return channelRecord;
-}
+// export async function createChannel(channelInput: ChannelInput) {
+//   // Verify author?
+//   const channelRecord = await db.channel.create({
+//     data: { public: true, ...channelInput },
+//   });
+//   return channelRecord;
+// }
 
 type PostInput = Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'postedAt' | 'status' | 'numViews'>;
 

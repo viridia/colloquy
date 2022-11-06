@@ -54,7 +54,7 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
   const [creating, { Form }] = createRouteAction(async (formData: FormData) => {
     setError('');
     try {
-      const resp = await gqlClient.request<Channel, MutationCreateChannelArgs>(
+      await gqlClient.request<Channel, MutationCreateChannelArgs>(
         createChannelMutation,
         {
           channel: {
@@ -66,7 +66,7 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
         }
       );
 
-      console.log(resp);
+      // console.log(resp);
 
       props.onClose();
     } catch (clientError) {
@@ -82,7 +82,13 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
 
   return (
     <Form {...formProps}>
-      <Modal open={props.open} onClose={props.onClose} withClose size="sm">
+      <Modal
+        open={props.open}
+        onClose={props.onClose}
+        withClose
+        size="sm"
+        aria-label="Create channel"
+      >
         <Modal.Header>New Channel</Modal.Header>
         <Modal.Body gap="xl">
           <FormField

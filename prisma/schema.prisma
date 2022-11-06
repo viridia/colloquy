@@ -19,13 +19,15 @@ enum Rank {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
+  id          String @id @default(cuid())
+  username    String @unique
+  email       String @unique
+  displayName String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  password  Password?
+  // password  Password?
   // notes    Note[]
 
   rank Rank @default(WRITER)
@@ -34,14 +36,26 @@ model User {
   inbox     Post[]      @relation("PostToUsers")
   reactions Reaction[]
   following Following[]
+  Session   Session?
 }
 
-model Password {
-  hash String
+model Session {
+  id          String  @id @default(cuid())
+  username    String  @unique
+  email       String  @unique
+  displayName String
+  avatar      String?
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  userId String? @unique
 }
+
+// model Password {
+//   hash String
+
+//   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   userId String @unique
+// }
 
 // A channel is a subsection of the forum (like a subreddit).
 model Channel {
@@ -81,7 +95,7 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt // Time of most recent edit or reply
   editedAt  DateTime @default(now()) // Time of most recent edit.
-  postedAt DateTime @default(now()) // Time when post becomes visible.
+  postedAt  DateTime @default(now()) // Time when post becomes visible.
 
   // Author of the post
   author   User   @relation("PostToAuthor", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
