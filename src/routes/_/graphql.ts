@@ -29,7 +29,7 @@ export async function POST({ request }: APIEvent) {
     variables,
     operationName,
     request: requestData,
-    contextFactory: () => ({ session }),
+    contextFactory: () => ({ session, board: 'local' }),
   });
 
   if (result.type === 'RESPONSE') {

@@ -22,3 +22,9 @@ export const userInputSchema: z.ZodType<Partial<UserInput>> = z.object({
   avatar: z.string().url(),
   // rank: z.string(),
 });
+
+export const boardNameSchema = z
+  .string()
+  .min(1, 'required')
+  .min(3, 'too-short')
+  .max(48, 'too-long');

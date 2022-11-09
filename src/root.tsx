@@ -18,20 +18,27 @@ import { createServerData$ } from 'solid-start/server';
 import { graphQLClient, GraphQLContext } from './graphql/client';
 import { getClientSession } from './auth/session';
 import { SessionContext } from './auth/sessionContext';
+import { getBoardInfo } from './db/client';
+import { SiteContext } from './context';
 // import "./root.css";
 
 export default function Root() {
   const userSettings = createUserSettings();
-  const session = createServerData$(async (_, { request }) => {
-    return await getClientSession(request);
+  const data = createServerData$(async (_, { request }) => {
+    return {
+      session: await getClientSession(request),
+      board: await getBoardInfo(request)
+    };
   });
+
+  const boardTitle = () => data()?.board?.title ?? 'Colloquy';
 
   return (
     <UserSettingsContext.Provider value={userSettings}>
       <GraphQLContext.Provider value={graphQLClient}>
         <Html lang="en" classList={{ [dark.className]: userSettings[0].theme === 'dark' }}>
           <Head>
-            <Title>Colloquy</Title>
+            <Title>{boardTitle()}</Title>
             <Meta charset="utf-8" />
             <Meta name="viewport" content="width=device-width, initial-scale=1" />
             <style id="stitches" innerHTML={getCssText()} />
@@ -39,10 +46,17 @@ export default function Root() {
           <Body>
             <ErrorBoundary>
               <Suspense fallback={<div>Loading</div>}>
-                <SessionContext.Provider value={session()}>
-                  <Routes>
-                    <FileRoutes />
-                  </Routes>
+                <SessionContext.Provider value={data()?.session}>
+                  <SiteContext.Provider
+                    value={{
+                      board: () => data()?.board,
+                      siteName: boardTitle
+                    }}
+                  >
+                    <Routes>
+                      <FileRoutes />
+                    </Routes>
+                  </SiteContext.Provider>
                 </SessionContext.Provider>
               </Suspense>
             </ErrorBoundary>

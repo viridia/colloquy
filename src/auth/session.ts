@@ -1,6 +1,17 @@
 import { isServer } from 'solid-js/web';
 import { createCookieSessionStorage, SessionStorage } from 'solid-start';
 import { db } from '../db/client';
+import gravatar from 'gravatar';
+import { Membership, User } from '@prisma/client';
+import { Session } from 'solid-start/session/sessions';
+
+export enum PermissionLevel {
+  VISITOR = 0,
+  WRITER = 1,
+  MODERATOR = 2,
+  STAFF = 3,
+  ADMIN = 4,
+}
 
 /** Session object. This is stored in a cookie. It can be in one of several states:
     * Pre-auth: If the user has not signed in, the session will be undefined.
@@ -22,9 +33,6 @@ export enum SessionKey {
 
   /** Random string used to prevent replay attacks in OAuth/OpenID flow. */
   Nonce = 'nonce',
-
-  /** Primary key of users table, basis for permission checks. Not visible on client. */
-  UserId = 'userId',
 
   /** The displayable unique id of the user. */
   Username = 'username',
@@ -83,39 +91,50 @@ export interface IClientSession {
   readonly avatar: string | undefined;
   /** Name of the provider that authenticated the email */
   readonly authProvider: string | undefined;
+  /** Permission level for current board. */
+  readonly permission: PermissionLevel;
+}
+
+async function getUser(
+  request: Request
+): Promise<[Session, string | undefined, (User & { memberships: Membership[] }) | undefined]> {
+  const boardId = 'local';
+  const session = await getSessionStorage().getSession(request.headers.get('Cookie'));
+  const email = session.get(SessionKey.Email);
+  const user = email
+    ? await db.user.findUnique({
+        where: {
+          email: session.get(SessionKey.Email),
+        },
+        include: {
+          memberships: {
+            where: { boardId },
+          },
+        },
+      })
+    : null;
+
+  return [session, email, user];
 }
 
 /** Returns a session object which is visible on the client. Only includes non-secret data. */
 export async function getClientSession(request: Request): Promise<IClientSession> {
-  const session = await getSessionStorage().getSession(request.headers.get('Cookie'));
-  if (session.get(SessionKey.Email)) {
-    const user = await db.user.findUnique({
-      where: {
-        email: session.get(SessionKey.Email),
-      },
-    });
-
-    if (user) {
-      session.set(SessionKey.Username, user.username);
-      session.set(SessionKey.UserId, user.id);
-    }
-  }
-
+  const [session, email, user] = await getUser(request);
   return {
     get isSignedIn() {
-      return Boolean(session.get(SessionKey.Username));
+      return Boolean(user);
     },
 
     get needsProfile() {
-      return Boolean(session.get(SessionKey.Email) && !session.get(SessionKey.Username));
+      return Boolean(user && !user.username);
     },
 
     get username() {
-      return session.get(SessionKey.Username);
+      return user?.username;
     },
 
     get name() {
-      return session.get(SessionKey.Name);
+      return user?.displayName;
     },
 
     get email() {
@@ -123,11 +142,53 @@ export async function getClientSession(request: Request): Promise<IClientSession
     },
 
     get avatar() {
-      return session.get(SessionKey.Avatar);
+      return email ? gravatar.url(email) : undefined;
     },
 
     get authProvider() {
       return session.get(SessionKey.AuthProvider);
+    },
+
+    get permission() {
+      return PermissionLevel[user?.memberships?.[0]?.rank] ?? PermissionLevel.VISITOR;
+    },
+  };
+}
+
+export interface IServerSession {
+  /** User is fully signed in and has a profile. */
+  readonly exists: boolean;
+  /** Unique username */
+  readonly username?: string;
+  /** Primary database key for user */
+  readonly userId?: string;
+  /** Email address. */
+  readonly email: string;
+  /** Permission level for current board. */
+  readonly permission: PermissionLevel;
+}
+
+export async function getServerSession(request: Request): Promise<IServerSession> {
+  const [, , user] = await getUser(request);
+  return {
+    get exists() {
+      return Boolean(user);
+    },
+
+    get username() {
+      return user?.username;
+    },
+
+    get userId() {
+      return user?.id;
+    },
+
+    get email() {
+      return user?.email;
+    },
+
+    get permission() {
+      return PermissionLevel[user?.memberships?.[0]?.rank] ?? PermissionLevel.VISITOR;
     },
   };
 }

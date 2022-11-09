@@ -31,25 +31,14 @@ model User {
   // password  Password?
   // notes    Note[]
 
-  rank Rank @default(WRITER)
+  // rank Rank @default(WRITER)
 
-  posts     Post[]      @relation("PostToAuthor")
-  inbox     Post[]      @relation("PostToUsers")
-  reactions Reaction[]
-  following Following[]
-  // Session   Session?
+  memberships Membership[]
+  posts       Post[]       @relation("PostToAuthor")
+  inbox       Post[]       @relation("PostToUsers")
+  reactions   Reaction[]
+  following   Following[]
 }
-
-// model Session {
-//   id          String  @id @default(cuid())
-//   username    String  @unique
-//   email       String  @unique
-//   displayName String
-//   avatar      String?
-
-//   user   User?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-//   userId String? @unique
-// }
 
 // model Password {
 //   hash String
@@ -60,14 +49,29 @@ model User {
 
 // A board represents a self-contained discussion board, usually associated with a subdomain.
 model Board {
-  id   String @id @default(cuid())
-  name String @unique
+  id   String @id
+  name String
+
+  // Users of this board.
+  members Membership[]
 
   // Channels in this board.
   channels Channel[]
+}
 
-  // Posts in this board.
-  posts    Post[]
+model Membership {
+  // Access level
+  rank Rank @default(WRITER)
+
+  // User which is a member of a board.
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  // The board this user is a member of
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  boardId String
+
+  @@id([boardId, userId])
 }
 
 // A channel is a subsection of the forum (like a subreddit).
@@ -108,10 +112,6 @@ enum PostStatus {
 
 model Post {
   id Int @id @default(autoincrement())
-
-  // Which discussion board this channel belongs to.
-  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  boardId String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt // Time of most recent edit or reply

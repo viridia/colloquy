@@ -125,8 +125,8 @@ const CreateProfileDialog: VoidComponent<Props> = props => {
           <FormField
             title="Username"
             description="Unique, no spaces, short"
-            severity={usernameSeverity()}
-            message={usernameMessage()}
+            error={usernameSeverity() === 'error' ? usernameMessage() : undefined}
+            success={usernameSeverity() === 'success' ? usernameMessage() : undefined}
           >
             <Input
               name="username"

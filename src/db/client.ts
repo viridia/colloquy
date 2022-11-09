@@ -2,13 +2,33 @@ import { Channel, PrismaClient } from '@prisma/client';
 
 export const db = new PrismaClient();
 
+export interface IBoardInfo {
+  id: string;
+  title?: string;
+  exists: boolean;
+}
+
+export async function getBoardInfo(_request: Request): Promise<IBoardInfo> {
+  // TODO: Extract board id from subdomain
+  const boardId = 'local';
+  const board = await db.board.findUnique({
+    where: {
+      id: boardId,
+    },
+  });
+
+  return {
+    id: boardId,
+    title: board?.name,
+    exists: Boolean(board),
+  };
+}
+
 export async function fetchUsers() {
   return await db.user.findMany();
-  // console.log(allUsers);
 }
 
 export function fetchChannels(): Promise<Channel[]> {
-  // Filter by access.
   return db.channel.findMany();
 }
 

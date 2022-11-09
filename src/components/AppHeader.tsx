@@ -9,10 +9,11 @@ import {
   Page,
   Spacer,
 } from 'dolmen';
-import { createEffect, JSX, ParentComponent, Show, Suspense, VoidComponent } from 'solid-js';
+import { createEffect, JSX, ParentComponent, Show, Suspense, useContext, VoidComponent } from 'solid-js';
 import { createServerAction$, redirect } from 'solid-start/server';
 import { getSessionStorage } from '../auth/session';
 import { useClientSession } from '../auth/sessionContext';
+import { SiteContext } from '../context';
 import { initials } from '../lib/initials';
 import { BreadcrumbsLink } from './BreadcrumbsLink';
 import CreateProfileDialog from './CreateProfileDialog';
@@ -39,6 +40,7 @@ interface AppHeaderProps {
 // TODO: Replace title with name of forum. (site params)
 export const AppHeader: VoidComponent<AppHeaderProps> = props => {
   const profileDialogState = createDialogState();
+  const site = useContext(SiteContext);
   const session = useClientSession();
   const location = useLocation();
 
@@ -61,9 +63,9 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
       <Breadcrumbs>
         <Show
           when={location.pathname !== '/' && location.pathname !== '/t'}
-          fallback={<BreadcrumbsItem>Colloquy</BreadcrumbsItem>}
+          fallback={<BreadcrumbsItem>{site.siteName()}</BreadcrumbsItem>}
         >
-          <BreadcrumbsLink href="/t">Colloquy</BreadcrumbsLink>
+          <BreadcrumbsLink href="/t">{site.siteName()}</BreadcrumbsLink>
         </Show>
         {props.breadcrumbs ?? []}
       </Breadcrumbs>
@@ -76,7 +78,11 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
         <Show when={session?.email} fallback={<SignInButton />}>
           <Menu>
             <Menu.Button icon round>
-              <Avatar class={avatarCss()} colorHash={session.email}>
+              <Avatar
+                class={avatarCss()}
+                colorHash={session.email}
+                src={session.avatar}
+              >
                 {session.name ? initials(session.name) : '--'}
               </Avatar>
             </Menu.Button>

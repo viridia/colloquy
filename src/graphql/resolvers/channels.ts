@@ -1,7 +1,8 @@
 import { db } from '../../db/client';
+import { RootType } from '../schema';
 import { Resolvers } from '../types';
 
-const channels: Resolvers = {
+const channels: Resolvers<RootType> = {
   Query: {
     channels() {
       return db.channel.findMany();
@@ -9,8 +10,18 @@ const channels: Resolvers = {
   },
 
   Mutation: {
-    createChannel: async (_parent, { channel }) => {
-      return db.channel.create({ data: { public: true, ...channel } });
+    createChannel: async (_parent, { channel }, context) => {
+      return db.channel.create({
+        data: {
+          public: true,
+          board: {
+            connect: {
+              name: context.board,
+            },
+          },
+          ...channel,
+        },
+      });
     },
   },
 };

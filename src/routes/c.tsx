@@ -7,7 +7,6 @@ import { AppHeader } from '../components/AppHeader';
 
 export function routeData() {
   return createServerData$(async (_, { request }) => {
-    // const user = await getUser(request);
 
     // await fetchUsers();
     const channels = await fetchChannels();
