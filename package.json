@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "solid-start dev --port 5005",
     "build": "solid-start build",
-    "build:svg": "svgr --template scripts/svg-template.cjs --typescript artwork/icons/ -d src/icons/",
+    "build:svg": "svgr --no-svgo --template scripts/svg-template.cjs --typescript artwork/icons/ -d src/icons/",
     "build:graphql": "graphql-codegen",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",

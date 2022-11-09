@@ -35,11 +35,18 @@ export type ChannelInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createChannel?: Maybe<Channel>;
+  modifyChannel?: Maybe<Channel>;
 };
 
 
 export type MutationCreateChannelArgs = {
   channel: ChannelInput;
+};
+
+
+export type MutationModifyChannelArgs = {
+  channel: ChannelInput;
+  channelId: Scalars['String'];
 };
 
 export type Query = {
@@ -165,6 +172,7 @@ export type ChannelResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<MutationCreateChannelArgs, 'channel'>>;
+  modifyChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<MutationModifyChannelArgs, 'channel' | 'channelId'>>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {

@@ -51,4 +51,7 @@ type Query {
 type Mutation {
   # Create a new channel
   createChannel(channel: ChannelInput!): Channel
+
+  # Create a new channel
+  modifyChannel(channelId: String!, channel: ChannelInput!): Channel
 }

@@ -80,7 +80,7 @@ model Channel {
 
   // Which discussion board this channel belongs to.
   board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  boardId String @unique
+  boardId String
 
   // Name of this channel.
   name String

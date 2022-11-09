@@ -1,6 +1,6 @@
 import { getGraphQLParameters, processRequest } from 'graphql-helix';
 import { APIEvent } from 'solid-start';
-import { getSessionStorage } from '../../auth/session';
+import { getServerSession } from '../../auth/session';
 import { schema } from '../../graphql/schema';
 
 export function GET({ request, params }: APIEvent) {
@@ -9,8 +9,7 @@ export function GET({ request, params }: APIEvent) {
 }
 
 export async function POST({ request }: APIEvent) {
-  const storage = getSessionStorage();
-  const session = await storage.getSession(request.headers.get('Cookie'));
+  const session = await getServerSession(request);
 
   // Convert request properties into a form that graphql-helix likes.
   const body = await request.json();

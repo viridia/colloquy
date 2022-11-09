@@ -8,14 +8,23 @@ import {
   TextArea,
   createFormValidation,
   ColorGrid,
+  css,
 } from 'dolmen';
 import { createEffect, createSignal, Show, useContext, VoidComponent } from 'solid-js';
 import { createRouteAction } from 'solid-start';
 import { GraphQLContext, decodeErrors, gql } from '../graphql/client';
-import { Channel, MutationCreateChannelArgs } from '../graphql/types';
+import { Channel, MutationCreateChannelArgs, MutationModifyChannelArgs } from '../graphql/types';
 import { channelColors } from './channelColors';
 
+const formClass = css({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'stretch',
+  overflow: 'hidden',
+});
+
 interface Props {
+  channelToEdit: Channel | null;
   open: boolean;
   onClose: () => void;
 }
@@ -30,8 +39,18 @@ export const createChannelMutation = gql`
   }
 `;
 
+export const modifyChannelMutation = gql`
+  mutation CreateChannel($channelId: String!, $channel: ChannelInput!) {
+    modifyChannel(channelId: $channelId, channel: $channel) {
+      id
+      name
+      description
+    }
+  }
+`;
+
 const CreateChannelDialog: VoidComponent<Props> = props => {
-  const [channelIsPublic, setChannelIsPublic] = createSignal(true);
+  // const [channelIsPublic, setChannelIsPublic] = createSignal(props.channelToEdit?.public ?? true);
   const [error, setError] = createSignal('');
   const { errors, formProps } = createFormValidation<{
     channelName: string;
@@ -46,17 +65,26 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
   const [creating, { Form }] = createRouteAction(async (formData: FormData) => {
     setError('');
     try {
-      await gqlClient.request<Channel, MutationCreateChannelArgs>(
-        createChannelMutation,
-        {
+      if (props.channelToEdit) {
+        await gqlClient.request<Channel, MutationModifyChannelArgs>(modifyChannelMutation, {
+          channelId: props.channelToEdit.id,
           channel: {
             name: formData.get('channelName') as string,
             description: formData.get('description') as string,
             public: Boolean(formData.get('public')),
             color: formData.get('color') as string,
           },
-        }
-      );
+        });
+      } else {
+        await gqlClient.request<Channel, MutationCreateChannelArgs>(createChannelMutation, {
+          channel: {
+            name: formData.get('channelName') as string,
+            description: formData.get('description') as string,
+            public: Boolean(formData.get('public')),
+            color: formData.get('color') as string,
+          },
+        });
+      }
 
       props.onClose();
     } catch (clientError) {
@@ -71,15 +99,19 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
   });
 
   return (
-    <Form {...formProps}>
-      <Modal
-        open={props.open}
-        onClose={props.onClose}
-        withClose
-        size="sm"
-        aria-label="Create channel"
-      >
-        <Modal.Header>New Channel</Modal.Header>
+    <Modal
+      open={props.open}
+      onClose={props.onClose}
+      withClose
+      size="sm"
+      aria-label="Create channel"
+    >
+      <Form {...formProps} class={formClass()}>
+        <Modal.Header>
+          <Show when={props.channelToEdit} fallback={<span>New Channel</span>}>
+            Update Channel
+          </Show>
+        </Modal.Header>
         <Modal.Body gap="xl">
           <FormField
             title="Channel Name"
@@ -89,19 +121,13 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
               }[errors.channelName]
             }
           >
-            <Input name="channelName" max={24} autofocus />
+            <Input name="channelName" max={24} autofocus value={props.channelToEdit?.name ?? ''} />
           </FormField>
           <FormField title="Channel Description">
-            <TextArea h="5rem" name="description" />
+            <TextArea h="5rem" name="description" value={props.channelToEdit?.description ?? ''} />
           </FormField>
           <FormField>
-            <CheckBox
-              checked={channelIsPublic()}
-              onClick={() => {
-                setChannelIsPublic(value => !value);
-              }}
-              name="public"
-            >
+            <CheckBox checked={props.channelToEdit?.public ?? true} name="public">
               Public channel
             </CheckBox>
           </FormField>
@@ -112,7 +138,7 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
               columnMajor
               rows={4}
               gap="sm"
-              value="#CFD8DC"
+              value={props.channelToEdit?.color ?? '#CFD8DC'}
             />
           </FormField>
           <Show when={error()}>
@@ -124,11 +150,13 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
             Cancel
           </Button>
           <Button color="primary" disabled={creating.pending} type="submit">
-            Create
+            <Show when={props.channelToEdit} fallback={<span>Create</span>}>
+              Save
+            </Show>
           </Button>
         </Modal.Footer>
-      </Modal>
-    </Form>
+      </Form>
+    </Modal>
   );
 };
 

@@ -29,7 +29,11 @@ export async function fetchUsers() {
 }
 
 export function fetchChannels(): Promise<Channel[]> {
-  return db.channel.findMany();
+  return db.channel.findMany({
+    orderBy: {
+      name: 'asc'
+    }
+  });
 }
 
 // export async function createChannel(channelInput: ChannelInput) {

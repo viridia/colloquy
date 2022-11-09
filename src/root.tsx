@@ -20,7 +20,7 @@ import { getClientSession } from './auth/session';
 import { SessionContext } from './auth/sessionContext';
 import { getBoardInfo } from './db/client';
 import { SiteContext } from './context';
-// import "./root.css";
+import "./root.css";
 
 export default function Root() {
   const userSettings = createUserSettings();

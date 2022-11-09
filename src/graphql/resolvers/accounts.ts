@@ -1,8 +1,7 @@
-import type { Session } from 'solid-start/session/sessions';
 import { db } from '../../db/client';
 import { Resolvers } from '../types';
 
-const accounts: Resolvers<{ session: Session }> = {
+const accounts: Resolvers = {
   Query: {
     account(_, { username }) {
       return db.user

@@ -1,8 +1,5 @@
-body {
-  font-family: Gordita, Roboto, Oxygen, Ubuntu, Cantarell,
-  'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.dm-backdrop {
-  opacity: 0;
+html {
+  /* font-family: Gordita, Roboto, Oxygen, Ubuntu, Cantarell,
+  'Open Sans', 'Helvetica Neue', sans-serif; */
+  font-size: 14px;
 }
