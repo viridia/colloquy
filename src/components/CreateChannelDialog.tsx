@@ -11,7 +11,7 @@ import {
 } from 'dolmen';
 import { createEffect, createSignal, Show, useContext, VoidComponent } from 'solid-js';
 import { createRouteAction } from 'solid-start';
-import { GraphQLContext, decodeErrors } from '../graphql/client';
+import { GraphQLContext, decodeErrors, gql } from '../graphql/client';
 import { Channel, MutationCreateChannelArgs } from '../graphql/types';
 import { channelColors } from './channelColors';
 
@@ -19,14 +19,6 @@ interface Props {
   open: boolean;
   onClose: () => void;
 }
-
-export const gql = (query: TemplateStringsArray) =>
-  query
-    .join(' ')
-    .replace(/#.+\r?\n|\r/g, '')
-    .replace(/\r?\n|\r/g, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim();
 
 export const createChannelMutation = gql`
   mutation CreateChannel($channel: ChannelInput!) {
@@ -65,8 +57,6 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
           },
         }
       );
-
-      // console.log(resp);
 
       props.onClose();
     } catch (clientError) {

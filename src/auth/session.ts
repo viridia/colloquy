@@ -1,5 +1,6 @@
 import { isServer } from 'solid-js/web';
 import { createCookieSessionStorage, SessionStorage } from 'solid-start';
+import { db } from '../db/client';
 
 /** Session object. This is stored in a cookie. It can be in one of several states:
     * Pre-auth: If the user has not signed in, the session will be undefined.
@@ -87,6 +88,19 @@ export interface IClientSession {
 /** Returns a session object which is visible on the client. Only includes non-secret data. */
 export async function getClientSession(request: Request): Promise<IClientSession> {
   const session = await getSessionStorage().getSession(request.headers.get('Cookie'));
+  if (session.get(SessionKey.Email)) {
+    const user = await db.user.findUnique({
+      where: {
+        email: session.get(SessionKey.Email),
+      },
+    });
+
+    if (user) {
+      session.set(SessionKey.Username, user.username);
+      session.set(SessionKey.UserId, user.id);
+    }
+  }
+
   return {
     get isSignedIn() {
       return Boolean(session.get(SessionKey.Username));

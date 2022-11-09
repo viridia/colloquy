@@ -1,7 +1,7 @@
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
 import { Page } from 'dolmen';
-import { fetchChannels, fetchUsers } from '../db/client';
+import { fetchChannels } from '../db/client';
 import { AppHeader } from '../components/AppHeader';
 // import { useSession } from '../auth/sessionContext';
 

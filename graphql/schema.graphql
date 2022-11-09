@@ -1,3 +1,15 @@
+# Information about a user
+type UserAccount {
+  # Username
+  username: String!
+
+  # Display name
+  displayName: String
+
+  # Avatar url
+  avatar: String
+}
+
 # A collection of posts
 type Channel {
   # Unique ID for this channel.
@@ -32,8 +44,8 @@ type Query {
   # Return a list of all channels visible to this user.
   channels: [Channel!]!
 
-  # Detect if a given username exists
-  usernameExists(userName: String!): Boolean!
+  # Return information about a user
+  account(username: String!): UserAccount
 }
 
 type Mutation {

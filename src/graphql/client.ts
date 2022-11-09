@@ -1,6 +1,15 @@
 import { GraphQLClient } from 'graphql-request';
 import { createContext } from 'solid-js';
 
+/** Variant of gql which removes excess whitespace */
+export const gql = (query: TemplateStringsArray) =>
+  query
+    .join(' ')
+    .replace(/#.+\r?\n|\r/g, '')
+    .replace(/\r?\n|\r/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
 export const graphQLClient = new GraphQLClient('/_/graphql', {
   headers: {
     authorization: 'Bearer MY_TOKEN',

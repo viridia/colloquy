@@ -44,13 +44,20 @@ export type MutationCreateChannelArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  account?: Maybe<UserAccount>;
   channels: Array<Channel>;
-  usernameExists: Scalars['Boolean'];
 };
 
 
-export type QueryUsernameExistsArgs = {
-  userName: Scalars['String'];
+export type QueryAccountArgs = {
+  username: Scalars['String'];
+};
+
+export type UserAccount = {
+  __typename?: 'UserAccount';
+  avatar?: Maybe<Scalars['String']>;
+  displayName?: Maybe<Scalars['String']>;
+  username: Scalars['String'];
 };
 
 
@@ -130,6 +137,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  UserAccount: ResolverTypeWrapper<UserAccount>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -142,6 +150,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Query: {};
   String: Scalars['String'];
+  UserAccount: UserAccount;
 };
 
 export type ChannelResolvers<ContextType = any, ParentType extends ResolversParentTypes['Channel'] = ResolversParentTypes['Channel']> = {
@@ -159,13 +168,21 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  account?: Resolver<Maybe<ResolversTypes['UserAccount']>, ParentType, ContextType, RequireFields<QueryAccountArgs, 'username'>>;
   channels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType>;
-  usernameExists?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<QueryUsernameExistsArgs, 'userName'>>;
+};
+
+export type UserAccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserAccount'] = ResolversParentTypes['UserAccount']> = {
+  avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  displayName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
   Channel?: ChannelResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  UserAccount?: UserAccountResolvers<ContextType>;
 };
 

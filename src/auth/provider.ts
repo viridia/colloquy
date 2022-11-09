@@ -20,3 +20,29 @@ export function addLoginProvider(provider: ILoginProvider) {
 export function getLoginProvider(provider: string) {
   return loginProviders[provider];
 }
+
+export function getAuthUri(providerId: string, state: string, nonce: string) {
+  const provider = getLoginProvider(providerId);
+  if (!provider) {
+    throw new Error(`Invalid login provider id: ${providerId}`);
+  }
+
+  return provider.getAuthUri(state, nonce);
+}
+
+export function fetchProfile(
+  providerId: string,
+  code: string,
+  nonce: string
+): Promise<IProfileData> {
+  if (!code) {
+    throw new Error('Missing authentication code');
+  }
+
+  const provider = getLoginProvider(providerId);
+  if (!provider) {
+    throw new Error(`Invalid login provider id: ${providerId}`);
+  }
+
+  return provider.fetchProfile(code, nonce);
+}

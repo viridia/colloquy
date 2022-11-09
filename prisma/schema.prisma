@@ -19,10 +19,11 @@ enum Rank {
 }
 
 model User {
-  id          String @id @default(cuid())
-  username    String @unique
-  email       String @unique
+  id          String  @id @default(cuid())
+  username    String  @unique
+  email       String  @unique
   displayName String
+  avatar      String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,19 +37,19 @@ model User {
   inbox     Post[]      @relation("PostToUsers")
   reactions Reaction[]
   following Following[]
-  Session   Session?
+  // Session   Session?
 }
 
-model Session {
-  id          String  @id @default(cuid())
-  username    String  @unique
-  email       String  @unique
-  displayName String
-  avatar      String?
+// model Session {
+//   id          String  @id @default(cuid())
+//   username    String  @unique
+//   email       String  @unique
+//   displayName String
+//   avatar      String?
 
-  user   User?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  userId String? @unique
-}
+//   user   User?   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+//   userId String? @unique
+// }
 
 // model Password {
 //   hash String
@@ -57,9 +58,25 @@ model Session {
 //   userId String @unique
 // }
 
+// A board represents a self-contained discussion board, usually associated with a subdomain.
+model Board {
+  id   String @id @default(cuid())
+  name String @unique
+
+  // Channels in this board.
+  channels Channel[]
+
+  // Posts in this board.
+  posts    Post[]
+}
+
 // A channel is a subsection of the forum (like a subreddit).
 model Channel {
   id String @id @default(cuid())
+
+  // Which discussion board this channel belongs to.
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  boardId String @unique
 
   // Name of this channel.
   name String
@@ -91,6 +108,10 @@ enum PostStatus {
 
 model Post {
   id Int @id @default(autoincrement())
+
+  // Which discussion board this channel belongs to.
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  boardId String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt // Time of most recent edit or reply

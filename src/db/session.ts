@@ -125,6 +125,3 @@ export interface ISession {
   id: string;
   // rank:
 }
-
-// export const SessionContext = createContext<ISession | null>();
-// export const useSession = () => useContext(SessionContext);

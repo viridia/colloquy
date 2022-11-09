@@ -1,10 +1,21 @@
 import { useLocation, useNavigate } from '@solidjs/router';
-import { Breadcrumbs, BreadcrumbsItem, createDialogState, css, Menu, Page, Spacer } from 'dolmen';
-import { createEffect, JSX, lazy, ParentComponent, Show, Suspense, VoidComponent } from 'solid-js';
+import {
+  Avatar,
+  Breadcrumbs,
+  BreadcrumbsItem,
+  createDialogState,
+  css,
+  Menu,
+  Page,
+  Spacer,
+} from 'dolmen';
+import { createEffect, JSX, ParentComponent, Show, Suspense, VoidComponent } from 'solid-js';
 import { createServerAction$, redirect } from 'solid-start/server';
 import { getSessionStorage } from '../auth/session';
 import { useClientSession } from '../auth/sessionContext';
+import { initials } from '../lib/initials';
 import { BreadcrumbsLink } from './BreadcrumbsLink';
+import CreateProfileDialog from './CreateProfileDialog';
 import { DarkModeToggle } from './DarkModeToggle';
 import { SignInButton } from './SignInButton';
 
@@ -20,8 +31,6 @@ const NavMenuItem: ParentComponent<{ href: string }> = props => {
   const navigate = useNavigate();
   return <Menu.Item onClick={() => navigate(props.href)}>{props.children}</Menu.Item>;
 };
-
-const CreateProfileDialog = lazy(() => import('./CreateProfileDialog'));
 
 interface AppHeaderProps {
   breadcrumbs?: JSX.Element[];
@@ -61,15 +70,15 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
       <Spacer />
       <DarkModeToggle />
       <Show when={profileDialogState.visible}>
-        <Suspense>
-          <CreateProfileDialog {...profileDialogState.modalProps} onCancel={() => logout()} />
-        </Suspense>
+        <CreateProfileDialog {...profileDialogState.modalProps} onCancel={() => logout()} />
       </Show>
       <Suspense>
         <Show when={session?.email} fallback={<SignInButton />}>
           <Menu>
             <Menu.Button icon round>
-              <span class={avatarCss()}>DPJ</span>
+              <Avatar class={avatarCss()} colorHash={session.email}>
+                {session.name ? initials(session.name) : '--'}
+              </Avatar>
             </Menu.Button>
             <Menu.List placement="bottom-end">
               <NavMenuItem href="/u/me">Profile&hellip;</NavMenuItem>

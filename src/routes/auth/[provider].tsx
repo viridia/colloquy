@@ -2,7 +2,7 @@ import { Alert, Stack, Title } from 'dolmen';
 import { Show } from 'solid-js';
 import { RouteDataArgs, useRouteData } from 'solid-start';
 import { createServerData$, redirect } from 'solid-start/server';
-import { getLoginProvider } from '../../auth/provider';
+import { fetchProfile } from '../../auth/provider';
 import { getSessionStorage, SessionKey } from '../../auth/session';
 
 export function routeData({ params }: RouteDataArgs) {
@@ -39,19 +39,16 @@ export function routeData({ params }: RouteDataArgs) {
         };
       }
 
-      const loginProvider = getLoginProvider(provider);
-      if (loginProvider) {
-        try {
-          const userInfo = await loginProvider.fetchProfile(code, nonce);
-          session.set(SessionKey.Name, userInfo.name);
-          session.set(SessionKey.Email, userInfo.email);
-          session.set(SessionKey.Avatar, userInfo.avatar);
-        } catch (e) {
-          console.error(e);
-          return {
-            error: (e as Error).message,
-          };
-        }
+      try {
+        const userInfo = await fetchProfile(provider, code, nonce);
+        session.set(SessionKey.Name, userInfo.name);
+        session.set(SessionKey.Email, userInfo.email);
+        session.set(SessionKey.Avatar, userInfo.avatar);
+      } catch (e) {
+        console.error(e);
+        return {
+          error: (e as Error).message,
+        };
       }
 
       throw redirect('/', {
