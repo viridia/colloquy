@@ -1,4 +1,4 @@
-import { Button, EmptyResult, Group, Spacer, Table } from 'dolmen';
+import { Button, EmptyResult, Group, Page, Spacer, Table } from 'dolmen';
 import { createSignal, lazy, Show } from 'solid-js';
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
@@ -19,7 +19,7 @@ export default function AdminChannels() {
   const [openCreate, setOpenCreate] = createSignal(false);
 
   return (
-    <div>
+    <Page.Content>
       <Group>
         Channels
         <Spacer />
@@ -64,6 +64,6 @@ export default function AdminChannels() {
         </Table>
       </Show>
       <CreateChannelDialog open={openCreate()} onClose={() => setOpenCreate(false)} />
-    </div>
+    </Page.Content>
   );
 }

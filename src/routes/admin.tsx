@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from 'solid-start';
-import { Breadcrumbs, Page } from 'dolmen';
+import { Aside, Breadcrumbs, Group, Nav, Page } from 'dolmen';
 import { AppHeader } from '../components/AppHeader';
 import { useClientSession } from '../auth/sessionContext';
 import { Show } from 'solid-js';
+import { NavLink } from '../components/NavLink';
 
 export default function Admin() {
   const session = useClientSession();
@@ -12,7 +13,16 @@ export default function Admin() {
         <Navigate href="/t" />
       </Show>
       <AppHeader breadcrumbs={[<Breadcrumbs.Item>Admin</Breadcrumbs.Item>]} />
-      <Outlet />
+      <Group flex={1}>
+        <Aside alignSelf="stretch" w="200px" alignItems="stretch">
+          <Nav>
+            <Nav.Title>Site Admin</Nav.Title>
+            <NavLink href="/admin/board">Board</NavLink>
+            <NavLink href="/admin/channels">Channels</NavLink>
+          </Nav>
+        </Aside>
+        <Outlet />
+      </Group>
     </Page>
   );
 }

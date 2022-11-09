@@ -5,6 +5,10 @@ import { createServerAction$ } from 'solid-start/server';
 import { createUserSession, login } from '~/db/session';
 import { AppHeader } from '../components/AppHeader';
 
+export function routeData() {
+  //
+}
+
 function validateUsername(username: unknown) {
   if (typeof username !== 'string' || username.length < 3) {
     return `Usernames must be at least 3 characters long`;
