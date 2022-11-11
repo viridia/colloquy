@@ -4,6 +4,7 @@ import { getServerSession } from '../../auth/session';
 import { schema } from '../../graphql/schema';
 
 export function GET({ request, params }: APIEvent) {
+  // TODO: Implement
   console.log('GET', params, request);
   return new Response('Hello World');
 }

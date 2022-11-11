@@ -31,6 +31,7 @@ const posts: Resolvers<QueryContext> = {
     },
   },
 
+  // TODO: Implement Post mutations.
   // Mutation: {
   //   createChannel: async (_parent, { channel }, context) => {
   //     if (context.session.permission < PermissionLevel.STAFF) {

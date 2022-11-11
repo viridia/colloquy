@@ -4,6 +4,8 @@ import { createCookieStore } from './createCookieStore';
 
 export interface ISettings {
   theme?: string;
+  composeSide?: 'left' | 'right' | 'bottom';
+  composeSize?: number;
 }
 
 export const UserSettingsContext =

@@ -6,6 +6,7 @@ import channels from './resolvers/channels';
 import posts from './resolvers/posts';
 import { IServerSession } from '../auth/session';
 
+// TODO: Add users
 export const schema = makeExecutableSchema({
   typeDefs: buildSchema(schemaString),
   resolvers: [accounts, channels, posts],

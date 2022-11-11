@@ -16,12 +16,13 @@ import { For, Show, Suspense } from 'solid-js';
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
 import { getServerSession } from '../../auth/session';
+import { ComposeButton } from '../../components/ComposeButton';
+import { ComposeWrapper } from '../../components/ComposeWrapper';
 import { runQuery } from '../../graphql/serverClient';
 import { Post } from '../../graphql/types';
-import { AddCircle } from '../../icons';
 
 const topicListCss = css({
-  width: 'min(70rem, 95vw)',
+  width: 'min(70rem, 95%)',
   flex: 1,
 });
 
@@ -56,60 +57,59 @@ export function routeData() {
 export default function TopicSummary() {
   const data = useRouteData<typeof routeData>();
   return (
-    <Page.Content alignItems="center">
-      <Stack class={topicListCss()} gap="xl">
-        <Group gap="md">
-          <Menu>
-            <Menu.Button>All Channels</Menu.Button>
-            <Menu.List>
-              <Menu.Item>All Channels</Menu.Item>
-              <Suspense>
-                <For each={data()?.channels ?? []}>
-                  {channel => (
-                    <Menu.Item>
-                      <Group gap="lg">
-                        <ColorSwatch color={channel.color} w={12} h={12} />
-                        {channel.name}
-                      </Group>
-                    </Menu.Item>
-                  )}
-                </For>
-              </Suspense>
-            </Menu.List>
-          </Menu>
-          <Button color="primary">Latest</Button>
-          <Spacer />
-          <Button>
-            <AddCircle width={16} />
-            New Topic
-          </Button>
-        </Group>
-        <Table>
-          <Table.Head>
-            <Table.Row>
-              <Table.Cell w="60%">Topic</Table.Cell>
-              <Table.Cell w="20%"></Table.Cell>
-              <Table.Cell>Replies</Table.Cell>
-              <Table.Cell>Views</Table.Cell>
-              <Table.Cell>Activity</Table.Cell>
-            </Table.Row>
-          </Table.Head>
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell>Topic Example</Table.Cell>
-              <Table.Cell></Table.Cell>
-              <Table.Cell>0</Table.Cell>
-              <Table.Cell>0</Table.Cell>
-              <Table.Cell>1d</Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        </Table>
-        <Suspense>
-          <Show when={data()}>
-            <EmptyResult>No topics yet!</EmptyResult>
-          </Show>
-        </Suspense>
-      </Stack>
-    </Page.Content>
+    <ComposeWrapper>
+      <Page.Content alignItems="center">
+        <Stack class={topicListCss()} gap="xl">
+          <Group gap="md">
+            <Menu>
+              <Menu.Button>All Channels</Menu.Button>
+              <Menu.List>
+                <Menu.Item>All Channels</Menu.Item>
+                <Suspense>
+                  <For each={data()?.channels ?? []}>
+                    {channel => (
+                      <Menu.Item>
+                        <Group gap="lg">
+                          <ColorSwatch color={channel.color} w={12} h={12} />
+                          {channel.name}
+                        </Group>
+                      </Menu.Item>
+                    )}
+                  </For>
+                </Suspense>
+              </Menu.List>
+            </Menu>
+            <Button color="primary">Latest</Button>
+            <Spacer />
+            <ComposeButton />
+          </Group>
+          <Table>
+            <Table.Head>
+              <Table.Row>
+                <Table.Cell w="60%">Topic</Table.Cell>
+                <Table.Cell w="20%"></Table.Cell>
+                <Table.Cell>Replies</Table.Cell>
+                <Table.Cell>Views</Table.Cell>
+                <Table.Cell>Activity</Table.Cell>
+              </Table.Row>
+            </Table.Head>
+            <Table.Body>
+              <Table.Row>
+                <Table.Cell>Topic Example</Table.Cell>
+                <Table.Cell></Table.Cell>
+                <Table.Cell>0</Table.Cell>
+                <Table.Cell>0</Table.Cell>
+                <Table.Cell>1d</Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          </Table>
+          <Suspense>
+            <Show when={data()}>
+              <EmptyResult>No topics yet!</EmptyResult>
+            </Show>
+          </Suspense>
+        </Stack>
+      </Page.Content>
+    </ComposeWrapper>
   );
 }

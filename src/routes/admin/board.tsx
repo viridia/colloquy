@@ -6,6 +6,7 @@ import { getServerSession, PermissionLevel } from '../../auth/session';
 import { boardNameSchema } from '../../auth/validation';
 import { db, getBoardInfo } from '../../db/client';
 
+// TODO: Replace with GQL query.
 export function routeData() {
   return createServerData$(async (_, { request }) => {
     return await getBoardInfo(request);

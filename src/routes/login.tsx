@@ -2,6 +2,8 @@ import { Page } from 'dolmen';
 // import { useParams } from 'solid-start';
 import { AppHeader } from '../components/AppHeader';
 
+// TODO: Keeping this around for reference on FormError usage which is undocumented.
+
 // function validateUsername(username: unknown) {
 //   if (typeof username !== 'string' || username.length < 3) {
 //     return `Usernames must be at least 3 characters long`;
