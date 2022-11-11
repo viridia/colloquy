@@ -6,8 +6,12 @@ import { Resolvers } from '../types';
 
 const channels: Resolvers<QueryContext> = {
   Query: {
-    channels() {
-      return db.channel.findMany();
+    channels(_parent, _args, context) {
+      return db.channel.findMany({
+        where: {
+          boardId: context.session.boardId,
+        },
+      });
     },
   },
 
@@ -21,7 +25,7 @@ const channels: Resolvers<QueryContext> = {
           public: true,
           board: {
             connect: {
-              id: context.board,
+              id: context.session.boardId,
             },
           },
           ...channel,

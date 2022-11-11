@@ -3,20 +3,27 @@ import { Button, ColorSwatch, EmptyResult, Group, Page, Spacer, Table } from 'do
 import { createSignal, lazy, Show } from 'solid-js';
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
-import { fetchChannels } from '../../db/client';
+import { getServerSession } from '../../auth/session';
+import { channelsQuery } from '../../graphql/queries';
+import { runQuery } from '../../graphql/serverClient';
 import { AddCircle, Settings } from '../../icons';
 
 const CreateChannelDialog = lazy(() => import('../../components/CreateChannelDialog'));
 
 export function routeData() {
-  return createServerData$(async () => {
-    const channels = await fetchChannels();
-    return channels;
+  return createServerData$(async (_, { request }) => {
+    const session = await getServerSession(request);
+    return await runQuery<{ channels: Channel[] }>({
+      operationName: 'Channels',
+      query: channelsQuery,
+      variables: {},
+      session,
+    });
   });
 }
 
 export default function AdminChannels() {
-  const channels = useRouteData<typeof routeData>();
+  const data = useRouteData<typeof routeData>();
   const [openCreate, setOpenCreate] = createSignal(false);
   const [channelToEdit, setChannelToEdit] = createSignal<Channel | null>(null);
 
@@ -37,7 +44,7 @@ export default function AdminChannels() {
         </Button>
       </Group>
       <Show
-        when={channels()?.length > 0}
+        when={data()?.channels.length > 0}
         fallback={<EmptyResult>No channels created yet.</EmptyResult>}
       >
         <Table mt="2rem">
@@ -51,7 +58,7 @@ export default function AdminChannels() {
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {channels()?.map(channel => (
+            {data()?.channels.map(channel => (
               <Table.Row>
                 <Table.Cell>{channel.name}</Table.Cell>
                 <Table.Cell>{channel.description}</Table.Cell>

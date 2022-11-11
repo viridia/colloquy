@@ -13,7 +13,7 @@ export const usernameSchema = z
   .regex(/^[A-Za-z]/, 'letter')
   .regex(/^[A-Za-z0-9\\-\\.\\_]+/, 'letter');
 
-type UserInput = Pick<User, 'username' | 'displayName' | 'email' | 'avatar' | 'rank'>;
+type UserInput = Pick<User, 'username' | 'displayName' | 'email' | 'avatar'>;
 
 export const userInputSchema: z.ZodType<Partial<UserInput>> = z.object({
   username: usernameSchema,

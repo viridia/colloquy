@@ -36,14 +36,6 @@ export function fetchChannels(): Promise<Channel[]> {
   });
 }
 
-// export async function createChannel(channelInput: ChannelInput) {
-//   // Verify author?
-//   const channelRecord = await db.channel.create({
-//     data: { public: true, ...channelInput },
-//   });
-//   return channelRecord;
-// }
-
 // type PostInput = Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'postedAt' | 'status' | 'numViews'>;
 
 // export async function postToChannel(postInput: PostInput, channel: string) {

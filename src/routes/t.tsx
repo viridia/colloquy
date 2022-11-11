@@ -2,11 +2,7 @@ import { Outlet } from 'solid-start';
 import { Page } from 'dolmen';
 import { AppHeader } from '../components/AppHeader';
 
-export function routeData() {
-  // Nothing
-}
-
-export default function Threads() {
+export default function Topics() {
   return (
     <Page>
       <AppHeader />

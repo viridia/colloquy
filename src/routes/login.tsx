@@ -1,10 +1,6 @@
 import { Page } from 'dolmen';
-import { useParams } from 'solid-start';
+// import { useParams } from 'solid-start';
 import { AppHeader } from '../components/AppHeader';
-
-export function routeData() {
-  //
-}
 
 // function validateUsername(username: unknown) {
 //   if (typeof username !== 'string' || username.length < 3) {
@@ -19,7 +15,7 @@ export function routeData() {
 // }
 
 export default function Login() {
-  const params = useParams();
+  // const params = useParams();
 
   // const [loggingIn, { Form }] = createServerAction$(async (form: FormData) => {
   //   const loginType = form.get('loginType');
@@ -63,15 +59,6 @@ export default function Login() {
   return (
     <Page>
       <AppHeader />
-        <input type="hidden" name="redirectTo" value={params.redirectTo ?? '/'} />
-        <div>
-          <label for="username-input">Username</label>
-          <input name="username" placeholder="kody" />
-        </div>
-        <div>
-          <label for="password-input">Password</label>
-          <input name="password" type="password" placeholder="twixrox" />
-        </div>
     </Page>
   );
 }

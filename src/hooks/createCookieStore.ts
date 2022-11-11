@@ -35,7 +35,7 @@ export const createCookieStore = <T extends object>(cookieName: string, initialV
   if (!isServer) {
     const [storeValue] = store;
     createEffect(() => {
-      document.cookie = `${cookieName}=${JSON.stringify(storeValue)};path=/`;
+      document.cookie = `${cookieName}=${JSON.stringify(storeValue)};path=/;SameSite=lax`;
     });
   }
 

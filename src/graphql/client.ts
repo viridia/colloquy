@@ -1,5 +1,7 @@
+import { DocumentNode } from 'graphql';
 import { GraphQLClient } from 'graphql-request';
 import { createContext } from 'solid-js';
+import { IServerSession } from '../auth/session';
 
 /** Variant of gql which removes excess whitespace */
 export const gql = (query: TemplateStringsArray) =>
@@ -75,4 +77,10 @@ export function decodeErrors(response: ErrorResponse) {
   }
 
   return 'Unknown error';
+}
+
+export interface IExecuteArgs {
+  session: IServerSession,
+  query: string | DocumentNode,
+  variables: Record<string, unknown>
 }

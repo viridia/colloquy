@@ -93,11 +93,17 @@ export interface IClientSession {
   readonly authProvider: string | undefined;
   /** Permission level for current board. */
   readonly permission: PermissionLevel;
+  /** Id of the discussion board. */
+  readonly boardId: string;
+  /** Title of the discussion board. */
+  readonly boardName: string;
 }
 
-async function getUser(
+async function getSessionContextData(
   request: Request
-): Promise<[Session, string | undefined, (User & { memberships: Membership[] }) | undefined]> {
+): Promise<
+  [Session, string | undefined, (User & { memberships: Membership[] }) | undefined, string]
+> {
   const boardId = 'local';
   const session = await getSessionStorage().getSession(request.headers.get('Cookie'));
   const email = session.get(SessionKey.Email);
@@ -114,12 +120,18 @@ async function getUser(
       })
     : null;
 
-  return [session, email, user];
+  return [session, email, user, boardId];
 }
 
 /** Returns a session object which is visible on the client. Only includes non-secret data. */
 export async function getClientSession(request: Request): Promise<IClientSession> {
-  const [session, email, user] = await getUser(request);
+  const [session, email, user, boardId] = await getSessionContextData(request);
+  const board = await db.board.findUnique({
+    where: {
+      id: boardId,
+    },
+  });
+
   return {
     get isSignedIn() {
       return Boolean(user);
@@ -152,6 +164,14 @@ export async function getClientSession(request: Request): Promise<IClientSession
     get permission() {
       return PermissionLevel[user?.memberships?.[0]?.rank] ?? PermissionLevel.VISITOR;
     },
+
+    get boardId() {
+      return boardId;
+    },
+
+    get boardName() {
+      return board?.name ?? 'Colloquy';
+    },
   };
 }
 
@@ -166,10 +186,12 @@ export interface IServerSession {
   readonly email: string;
   /** Permission level for current board. */
   readonly permission: PermissionLevel;
+  /** Id of the discussion board. */
+  readonly boardId: string;
 }
 
 export async function getServerSession(request: Request): Promise<IServerSession> {
-  const [, , user] = await getUser(request);
+  const [, , user, boardId] = await getSessionContextData(request);
   return {
     get exists() {
       return Boolean(user);
@@ -189,6 +211,10 @@ export async function getServerSession(request: Request): Promise<IServerSession
 
     get permission() {
       return PermissionLevel[user?.memberships?.[0]?.rank] ?? PermissionLevel.VISITOR;
+    },
+
+    get boardId() {
+      return boardId;
     },
   };
 }

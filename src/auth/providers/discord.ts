@@ -55,7 +55,7 @@ export default (config: IDiscordConfig): ILoginProvider => {
       });
 
       if (resp2.status !== 200) {
-        console.error(await resp2.json());
+        console.error('discord auth', await resp2.json());
         throw new Error(`Profile request returned status: ${resp2.status}`);
       }
 

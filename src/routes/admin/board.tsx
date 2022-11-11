@@ -61,7 +61,7 @@ export default function BoardConfigPage() {
         });
       }
     } catch (e) {
-      console.error(e);
+      console.error('board config', e);
       throw new FormError('Database update returned an error');
     }
   });

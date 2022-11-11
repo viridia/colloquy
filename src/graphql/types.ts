@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  DateTime: any;
+  JSONObject: any;
 };
 
 export type Channel = {
@@ -32,6 +34,10 @@ export type ChannelInput = {
   public?: InputMaybe<Scalars['Boolean']>;
 };
 
+export type FiltersInput = {
+  channel?: InputMaybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createChannel?: Maybe<Channel>;
@@ -49,15 +55,45 @@ export type MutationModifyChannelArgs = {
   channelId: Scalars['String'];
 };
 
+export type Post = {
+  __typename?: 'Post';
+  authorId: Scalars['String'];
+  body: Scalars['JSONObject'];
+  createdAt: Scalars['DateTime'];
+  editedAt: Scalars['DateTime'];
+  id: Scalars['Int'];
+  license?: Maybe<Scalars['String']>;
+  postedAt: Scalars['DateTime'];
+  slug: Scalars['String'];
+  status: PostStatus;
+  tags: Array<Scalars['String']>;
+  title: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export enum PostStatus {
+  Deleted = 'DELETED',
+  Draft = 'DRAFT',
+  Pending = 'PENDING',
+  Published = 'PUBLISHED',
+  Read = 'READ'
+}
+
 export type Query = {
   __typename?: 'Query';
   account?: Maybe<UserAccount>;
   channels: Array<Channel>;
+  topics: Array<Post>;
 };
 
 
 export type QueryAccountArgs = {
   username: Scalars['String'];
+};
+
+
+export type QueryTopicsArgs = {
+  filters?: InputMaybe<FiltersInput>;
 };
 
 export type UserAccount = {
@@ -139,9 +175,14 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Channel: ResolverTypeWrapper<Channel>;
   ChannelInput: ChannelInput;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
+  FiltersInput: FiltersInput;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   Mutation: ResolverTypeWrapper<{}>;
+  Post: ResolverTypeWrapper<Post>;
+  PostStatus: PostStatus;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   UserAccount: ResolverTypeWrapper<UserAccount>;
@@ -152,9 +193,13 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Channel: Channel;
   ChannelInput: ChannelInput;
+  DateTime: Scalars['DateTime'];
+  FiltersInput: FiltersInput;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  JSONObject: Scalars['JSONObject'];
   Mutation: {};
+  Post: Post;
   Query: {};
   String: Scalars['String'];
   UserAccount: UserAccount;
@@ -170,14 +215,39 @@ export type ChannelResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
+}
+
+export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSONObject'], any> {
+  name: 'JSONObject';
+}
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<MutationCreateChannelArgs, 'channel'>>;
   modifyChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<MutationModifyChannelArgs, 'channel' | 'channelId'>>;
 };
 
+export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
+  authorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  body?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  editedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  license?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  postedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['PostStatus'], ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<Maybe<ResolversTypes['UserAccount']>, ParentType, ContextType, RequireFields<QueryAccountArgs, 'username'>>;
   channels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType>;
+  topics?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, Partial<QueryTopicsArgs>>;
 };
 
 export type UserAccountResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserAccount'] = ResolversParentTypes['UserAccount']> = {
@@ -189,7 +259,10 @@ export type UserAccountResolvers<ContextType = any, ParentType extends Resolvers
 
 export type Resolvers<ContextType = any> = {
   Channel?: ChannelResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
+  JSONObject?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
+  Post?: PostResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   UserAccount?: UserAccountResolvers<ContextType>;
 };

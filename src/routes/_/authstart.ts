@@ -18,7 +18,7 @@ export async function GET({ request }: APIEvent) {
       headers: { 'Set-Cookie': await storage.commitSession(session) },
     });
   } catch (e) {
-    console.error(e);
+    console.error('authstart', e);
     throw e;
   }
 }

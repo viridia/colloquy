@@ -34,23 +34,20 @@ export const createChannelMutation = gql`
     createChannel(channel: $channel) {
       id
       name
-      description
     }
   }
 `;
 
 export const modifyChannelMutation = gql`
-  mutation CreateChannel($channelId: String!, $channel: ChannelInput!) {
+  mutation ModifyChannel($channelId: String!, $channel: ChannelInput!) {
     modifyChannel(channelId: $channelId, channel: $channel) {
       id
       name
-      description
     }
   }
 `;
 
 const CreateChannelDialog: VoidComponent<Props> = props => {
-  // const [channelIsPublic, setChannelIsPublic] = createSignal(props.channelToEdit?.public ?? true);
   const [error, setError] = createSignal('');
   const { errors, formProps } = createFormValidation<{
     channelName: string;

@@ -9,11 +9,10 @@ import {
   Page,
   Spacer,
 } from 'dolmen';
-import { createEffect, JSX, ParentComponent, Show, Suspense, useContext, VoidComponent } from 'solid-js';
+import { createEffect, JSX, ParentComponent, Show, Suspense, VoidComponent } from 'solid-js';
 import { createServerAction$, redirect } from 'solid-start/server';
 import { getSessionStorage } from '../auth/session';
 import { useClientSession } from '../auth/sessionContext';
-import { SiteContext } from '../context';
 import { initials } from '../lib/initials';
 import { BreadcrumbsLink } from './BreadcrumbsLink';
 import CreateProfileDialog from './CreateProfileDialog';
@@ -37,10 +36,8 @@ interface AppHeaderProps {
   breadcrumbs?: JSX.Element[];
 }
 
-// TODO: Replace title with name of forum. (site params)
 export const AppHeader: VoidComponent<AppHeaderProps> = props => {
   const profileDialogState = createDialogState();
-  const site = useContext(SiteContext);
   const session = useClientSession();
   const location = useLocation();
 
@@ -55,7 +52,7 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
   });
 
   createEffect(() => {
-    profileDialogState.setOpen(session.needsProfile);
+    profileDialogState.setOpen(session?.needsProfile);
   });
 
   return (
@@ -63,9 +60,9 @@ export const AppHeader: VoidComponent<AppHeaderProps> = props => {
       <Breadcrumbs>
         <Show
           when={location.pathname !== '/' && location.pathname !== '/t'}
-          fallback={<BreadcrumbsItem>{site.siteName()}</BreadcrumbsItem>}
+          fallback={<BreadcrumbsItem>{session?.boardName}</BreadcrumbsItem>}
         >
-          <BreadcrumbsLink href="/t">{site.siteName()}</BreadcrumbsLink>
+          <BreadcrumbsLink href="/t">{session?.boardName}</BreadcrumbsLink>
         </Show>
         {props.breadcrumbs ?? []}
       </Breadcrumbs>

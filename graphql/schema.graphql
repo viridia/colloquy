@@ -1,3 +1,6 @@
+scalar JSONObject
+scalar DateTime
+
 # Information about a user
 type UserAccount {
   # Username
@@ -40,12 +43,106 @@ input ChannelInput {
   postDelay: Int
 }
 
+enum PostStatus {
+  DRAFT # Saved as draft
+  PENDING # Waiting to publish
+  PUBLISHED # Visible
+  READ # Read by recipient (only for posts to individual users)
+  DELETED # Deleted by author
+}
+
+type Post {
+  id: Int!
+
+  # Time this post was first composed
+  createdAt: DateTime!
+
+  # Later of (createdAt, updatedAt, or time of most recent reply)
+  updatedAt: DateTime!
+
+  # Time this post was updated
+  editedAt: DateTime!
+
+  # Posting time - when this post first became visible.
+  postedAt: DateTime!
+
+  #   // Author of the post
+  #   author   User   @relation("PostToAuthor", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  authorId: String!
+
+  # If present, indicates the author has licensed this post under the given license.
+  license: String
+
+  # Title of the post
+  title: String!
+
+  # Slug
+  slug: String!
+
+  # JSON-encoded rich text body
+  body: JSONObject!
+
+  # Post publications
+  status: PostStatus!
+
+  # List of hash tags
+  tags: [String!]!
+
+  #   // # ID of users mentioned in the body
+  #   // mentions User[] @relation("mentions", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  #   // Number of times this post has been viewed.
+  #   numViews Int @default(0)
+
+  #   // List of replies to this post.
+  #   replies Post[] @relation("PostReplies")
+
+  #   // If this is a reply, then this is a reference to the immediate parent
+  #   parent   Post? @relation("PostReplies", fields: [parentId], references: [id])
+  #   parentId Int?
+
+  #   // # List of user ids for users who have replied to this post (denormalized).
+  #   // # This is used to display avatars on the summary page.
+  #   // replyAuthors: [ID!]
+
+  #   // Reactions to this post - likes, flags, up/down votes.
+  #   reactions Reaction[]
+
+  #   // Ids of users that are following (subscribed to) this post.
+  #   // These users will get a notification when updates happen.
+  #   // Author is automatically added to this list, but can unfollow manually.
+  #   following Following[]
+
+  #   // # Whether this post should always appear at the top of the list of posts.
+  #   sticky Boolean @default(false)
+  # }
+}
+
+input TopicFiltersInput {
+  # Filter by channel
+  channel: String
+}
+
+input TopicInput {
+  channel: String!
+}
+
+input ReplyInput {
+  parent: String!
+}
+
 type Query {
   # Return a list of all channels visible to this user.
   channels: [Channel!]!
 
   # Return information about a user
   account(username: String!): UserAccount
+
+  # Return list of top-level topics
+  topics(filters: TopicFiltersInput): [Post!]!
+
+  # Return a topic and all replies to it
+  thread(parent: String!): [Post!]!
 }
 
 type Mutation {
@@ -54,4 +151,15 @@ type Mutation {
 
   # Create a new channel
   modifyChannel(channelId: String!, channel: ChannelInput!): Channel
+
+  # Create a new top-level post
+  createTopic(topicInput: TopicInput): Post
+
+  # Reply to a post
+  createReply(topicInput: ReplyInput): Post
+
+  # editPost
+  # deletePost
+  # retractPost
+  # createMessage
 }

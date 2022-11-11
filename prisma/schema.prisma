@@ -104,7 +104,7 @@ model Channel {
 
 enum PostStatus {
   DRAFT // Saved as draft
-  QUEUED // Waiting to publish
+  PENDING // Waiting to publish
   PUBLISHED // Visible
   READ // Read by recipient (only for posts to individual users)
   DELETED // Deleted by author
@@ -160,11 +160,11 @@ model Post {
   parentId Int?
 
   // List of transitive descendants of this post
-  origin Post[] @relation("Threads")
+  descendants Post[] @relation("Topics")
 
-  // A reference to the originating post in this thread.
-  thread   Post? @relation("Threads", fields: [threadId], references: [id])
-  threadId Int?
+  // A reference to the originating post in this topic.
+  topic   Post? @relation("Topics", fields: [topicId], references: [id])
+  topicId Int?
 
   // # List of user ids for users who have replied to this post (denormalized).
   // # This is used to display avatars on the summary page.
