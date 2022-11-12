@@ -1,4 +1,4 @@
-import { Channel, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 export const db = new PrismaClient();
 
@@ -8,8 +8,8 @@ export interface IBoardInfo {
   exists: boolean;
 }
 
+// TODO: replace with graphql query.
 export async function getBoardInfo(_request: Request): Promise<IBoardInfo> {
-  // TODO: Extract board id from subdomain
   const boardId = 'local';
   const board = await db.board.findUnique({
     where: {
@@ -22,18 +22,6 @@ export async function getBoardInfo(_request: Request): Promise<IBoardInfo> {
     title: board?.name,
     exists: Boolean(board),
   };
-}
-
-export async function fetchUsers() {
-  return await db.user.findMany();
-}
-
-export function fetchChannels(): Promise<Channel[]> {
-  return db.channel.findMany({
-    orderBy: {
-      name: 'asc'
-    }
-  });
 }
 
 // type PostInput = Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'postedAt' | 'status' | 'numViews'>;

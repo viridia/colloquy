@@ -1,7 +1,10 @@
 import { Post as PostRecord } from '@prisma/client';
+import { GraphQLError } from 'graphql';
+import { PermissionLevel } from '../../auth/session';
 import { db } from '../../db/client';
 import { QueryContext } from '../schema';
 import { Post, PostStatus, Resolvers } from '../types';
+import slugify from 'slugify';
 
 const decodePost = (t: PostRecord): Post => ({
   id: t.id,
@@ -32,23 +35,30 @@ const posts: Resolvers<QueryContext> = {
   },
 
   // TODO: Implement Post mutations.
-  // Mutation: {
-  //   createChannel: async (_parent, { channel }, context) => {
-  //     if (context.session.permission < PermissionLevel.STAFF) {
-  //       throw new GraphQLError('Permission denied');
-  //     }
-  //     return db.channel.create({
-  //       data: {
-  //         public: true,
-  //         board: {
-  //           connect: {
-  //             id: context.session.boardId,
-  //           },
-  //         },
-  //         ...channel,
-  //       },
-  //     });
-  //   },
+  Mutation: {
+    createTopic: async (_parent, { channel, post }, context) => {
+      if (context.session.permission < PermissionLevel.VISITOR) {
+        throw new GraphQLError('Permission denied');
+      }
+      return db.post.create({
+        data: {
+          title: post.title,
+          body: post.body,
+          author: {
+            connect: {
+              id: context.session.userId!,
+            },
+          },
+          slug: slugify(post.title),
+          toChannels: {
+            connect: {
+              id: channel,
+            },
+          },
+          ...post,
+        },
+      }).then(decodePost);
+    },
 
   //   modifyChannel: async (_parent, { channelId, channel }, context) => {
   //     if (context.session.permission < PermissionLevel.STAFF) {
@@ -63,7 +73,7 @@ const posts: Resolvers<QueryContext> = {
   //       },
   //     });
   //   },
-  // },
+  },
 };
 
 export default posts;

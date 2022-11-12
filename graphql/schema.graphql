@@ -51,6 +51,12 @@ enum PostStatus {
   DELETED # Deleted by author
 }
 
+input PostInput {
+  title: String!
+  body: String!
+  license: String
+}
+
 type Post {
   id: Int!
 
@@ -123,14 +129,6 @@ input TopicFiltersInput {
   channel: String
 }
 
-input TopicInput {
-  channel: String!
-}
-
-input ReplyInput {
-  parent: String!
-}
-
 type Query {
   # Return a list of all channels visible to this user.
   channels: [Channel!]!
@@ -153,10 +151,10 @@ type Mutation {
   modifyChannel(channelId: String!, channel: ChannelInput!): Channel
 
   # Create a new top-level post
-  createTopic(topicInput: TopicInput): Post
+  createTopic(channel: String!, post: PostInput): Post
 
   # Reply to a post
-  createReply(topicInput: ReplyInput): Post
+  createReply(parent: String!, post: PostInput): Post
 
   # editPost
   # deletePost

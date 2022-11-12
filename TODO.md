@@ -1,7 +1,8 @@
 # TODO
 
-* Compose view with splitter
 * Text edit
+  * Markdown
+  * WYSIWYG
 * User admin
 * User profile page.
 

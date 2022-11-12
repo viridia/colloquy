@@ -3,14 +3,18 @@ import { createMemo, lazy, Match, ParentComponent, Show, Switch } from 'solid-js
 import { useSearchParams } from 'solid-start';
 import { useUserSettings } from '../hooks/createUserSettings';
 
-const ComposePane = lazy(() => import('./ComposePane'));
+const ComposePane = lazy(() => import('./ComposeEditor'));
 
-export const ComposeWrapper: ParentComponent = props => {
+interface Props {
+  mode?: 'topic' | 'reply' | 'message';
+}
+
+export const ComposeWrapper: ParentComponent<Props> = props => {
   const [params] = useSearchParams<{ compose: string }>();
   const [settings, setSettings] = useUserSettings();
 
   const positions = createMemo(() => {
-    const size = settings.composeSize ?? 0.3;
+    const size = settings.composeSize ?? 0.4;
     if (settings.composeSide === 'left') {
       return [size];
     } else {
@@ -37,7 +41,7 @@ export const ComposeWrapper: ParentComponent = props => {
             setPositions={setPositions}
           >
             {props.children}
-            <ComposePane />
+            <ComposePane mode={props.mode} />
           </SplitPane.Controlled>
         </Match>
         <Match when={settings.composeSide === 'left'}>
@@ -46,7 +50,7 @@ export const ComposeWrapper: ParentComponent = props => {
             positions={positions()}
             setPositions={setPositions}
           >
-            <ComposePane />
+            <ComposePane mode={props.mode} />
             {props.children}
           </SplitPane.Controlled>
         </Match>
@@ -57,7 +61,7 @@ export const ComposeWrapper: ParentComponent = props => {
             setPositions={setPositions}
           >
             {props.children}
-            <ComposePane />
+            <ComposePane mode={props.mode} />
           </SplitPane.Controlled>
         </Match>
       </Switch>

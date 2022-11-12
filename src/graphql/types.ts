@@ -34,19 +34,29 @@ export type ChannelInput = {
   public?: InputMaybe<Scalars['Boolean']>;
 };
 
-export type FiltersInput = {
-  channel?: InputMaybe<Scalars['String']>;
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   createChannel?: Maybe<Channel>;
+  createReply?: Maybe<Post>;
+  createTopic?: Maybe<Post>;
   modifyChannel?: Maybe<Channel>;
 };
 
 
 export type MutationCreateChannelArgs = {
   channel: ChannelInput;
+};
+
+
+export type MutationCreateReplyArgs = {
+  parent: Scalars['String'];
+  post?: InputMaybe<PostInput>;
+};
+
+
+export type MutationCreateTopicArgs = {
+  channel: Scalars['String'];
+  post?: InputMaybe<PostInput>;
 };
 
 
@@ -71,6 +81,12 @@ export type Post = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type PostInput = {
+  body: Scalars['String'];
+  license?: InputMaybe<Scalars['String']>;
+  title: Scalars['String'];
+};
+
 export enum PostStatus {
   Deleted = 'DELETED',
   Draft = 'DRAFT',
@@ -83,6 +99,7 @@ export type Query = {
   __typename?: 'Query';
   account?: Maybe<UserAccount>;
   channels: Array<Channel>;
+  thread: Array<Post>;
   topics: Array<Post>;
 };
 
@@ -92,8 +109,17 @@ export type QueryAccountArgs = {
 };
 
 
+export type QueryThreadArgs = {
+  parent: Scalars['String'];
+};
+
+
 export type QueryTopicsArgs = {
-  filters?: InputMaybe<FiltersInput>;
+  filters?: InputMaybe<TopicFiltersInput>;
+};
+
+export type TopicFiltersInput = {
+  channel?: InputMaybe<Scalars['String']>;
 };
 
 export type UserAccount = {
@@ -176,15 +202,16 @@ export type ResolversTypes = {
   Channel: ResolverTypeWrapper<Channel>;
   ChannelInput: ChannelInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
-  FiltersInput: FiltersInput;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   JSONObject: ResolverTypeWrapper<Scalars['JSONObject']>;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
+  PostInput: PostInput;
   PostStatus: PostStatus;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  TopicFiltersInput: TopicFiltersInput;
   UserAccount: ResolverTypeWrapper<UserAccount>;
 };
 
@@ -194,14 +221,15 @@ export type ResolversParentTypes = {
   Channel: Channel;
   ChannelInput: ChannelInput;
   DateTime: Scalars['DateTime'];
-  FiltersInput: FiltersInput;
   ID: Scalars['ID'];
   Int: Scalars['Int'];
   JSONObject: Scalars['JSONObject'];
   Mutation: {};
   Post: Post;
+  PostInput: PostInput;
   Query: {};
   String: Scalars['String'];
+  TopicFiltersInput: TopicFiltersInput;
   UserAccount: UserAccount;
 };
 
@@ -225,6 +253,8 @@ export interface JsonObjectScalarConfig extends GraphQLScalarTypeConfig<Resolver
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<MutationCreateChannelArgs, 'channel'>>;
+  createReply?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<MutationCreateReplyArgs, 'parent'>>;
+  createTopic?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<MutationCreateTopicArgs, 'channel'>>;
   modifyChannel?: Resolver<Maybe<ResolversTypes['Channel']>, ParentType, ContextType, RequireFields<MutationModifyChannelArgs, 'channel' | 'channelId'>>;
 };
 
@@ -247,6 +277,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<Maybe<ResolversTypes['UserAccount']>, ParentType, ContextType, RequireFields<QueryAccountArgs, 'username'>>;
   channels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType>;
+  thread?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryThreadArgs, 'parent'>>;
   topics?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, Partial<QueryTopicsArgs>>;
 };
 

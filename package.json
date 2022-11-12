@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "solid-start dev --port 5005",
     "build": "solid-start build",
-    "build:svg": "svgr --no-svgo --template scripts/svg-template.cjs --typescript artwork/icons/ -d src/icons/",
+    "build:svg": "svgr --template scripts/svg-template.cjs artwork/icons/ -d src/icons/",
     "build:graphql": "graphql-codegen",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
@@ -46,6 +46,7 @@
     "graphql-helix": "^1.13.0",
     "graphql-request": "^5.0.0",
     "gravatar": "^1.8.2",
+    "slugify": "^1.6.5",
     "solid-js": "^1.6.1",
     "solid-start": "^0.2.5",
     "undici": "^5.11.0",

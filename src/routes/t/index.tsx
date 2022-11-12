@@ -57,7 +57,7 @@ export function routeData() {
 export default function TopicSummary() {
   const data = useRouteData<typeof routeData>();
   return (
-    <ComposeWrapper>
+    <ComposeWrapper mode="topic">
       <Page.Content alignItems="center">
         <Stack class={topicListCss()} gap="xl">
           <Group gap="md">
