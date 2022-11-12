@@ -72,9 +72,9 @@ type Post {
   # Posting time - when this post first became visible.
   postedAt: DateTime!
 
-  #   // Author of the post
-  #   author   User   @relation("PostToAuthor", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  # Author of the post
   authorId: String!
+  author: UserAccount!
 
   # If present, indicates the author has licensed this post under the given license.
   license: String
@@ -97,19 +97,17 @@ type Post {
   #   // # ID of users mentioned in the body
   #   // mentions User[] @relation("mentions", fields: [authorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  #   // Number of times this post has been viewed.
-  #   numViews Int @default(0)
+  # Number of times this post has been viewed.
+  numViews: Int!
 
-  #   // List of replies to this post.
-  #   replies Post[] @relation("PostReplies")
+  # If this is a reply, then this is a reference to the immediate parent
+  parent: Int
 
-  #   // If this is a reply, then this is a reference to the immediate parent
-  #   parent   Post? @relation("PostReplies", fields: [parentId], references: [id])
-  #   parentId Int?
+  # Channels this post was posted to.
+  channels: [Channel!]
 
-  #   // # List of user ids for users who have replied to this post (denormalized).
-  #   // # This is used to display avatars on the summary page.
-  #   // replyAuthors: [ID!]
+  # List of user ids for users who have replied to this post (denormalized).
+  respondents: [String!]!
 
   #   // Reactions to this post - likes, flags, up/down votes.
   #   reactions Reaction[]

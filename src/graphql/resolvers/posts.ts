@@ -1,14 +1,23 @@
-import { Post as PostRecord } from '@prisma/client';
+import { Channel, Post as PostRecord, User } from '@prisma/client';
 import { GraphQLError } from 'graphql';
 import { PermissionLevel } from '../../auth/session';
 import { db } from '../../db/client';
 import { QueryContext } from '../schema';
-import { Post, PostStatus, Resolvers } from '../types';
+import { Post, PostStatus, Resolvers, UserAccount } from '../types';
 import slugify from 'slugify';
+import graphqlFields from 'graphql-fields';
+import gravatar from 'gravatar';
 
-const decodePost = (t: PostRecord): Post => ({
+const decodeUser = (t: User): UserAccount => ({
+  username: t.username,
+  displayName: t.displayName,
+  avatar: t.email ? gravatar.url(t.email) : undefined,
+});
+
+const decodePost = (t: PostRecord & { toChannels: Channel[]; author: User }): Post => ({
   id: t.id,
   authorId: t.authorId,
+  author: t.author ? decodeUser(t.author) : undefined,
   createdAt: t.createdAt,
   updatedAt: t.updatedAt,
   editedAt: t.editedAt,
@@ -17,17 +26,29 @@ const decodePost = (t: PostRecord): Post => ({
   title: t.title,
   slug: t.slug,
   status: t.status as PostStatus,
-  tags: t.tags
+  tags: t.tags,
+  numViews: t.numViews,
+  respondents: [],
+  parent: t.parentId,
+  channels: t.toChannels,
 });
 
 const posts: Resolvers<QueryContext> = {
   Query: {
-    topics(_parent, _args, _context) {
+    topics(_parent, { filters }, _context, info) {
+      const fields = graphqlFields(info);
+      console.log('filters', filters);
       return db.post
         .findMany({
           where: {
-            // boardId: context.session.boardId,
             parent: null,
+          },
+          orderBy: {
+            updatedAt: 'desc',
+          },
+          include: {
+            toChannels: !!fields.channels,
+            author: !!fields.author,
           },
         })
         .then(topics => topics.map(decodePost));
@@ -40,39 +61,41 @@ const posts: Resolvers<QueryContext> = {
       if (context.session.permission < PermissionLevel.VISITOR) {
         throw new GraphQLError('Permission denied');
       }
-      return db.post.create({
-        data: {
-          title: post.title,
-          body: post.body,
-          author: {
-            connect: {
-              id: context.session.userId!,
+      return db.post
+        .create({
+          data: {
+            title: post.title,
+            body: post.body,
+            author: {
+              connect: {
+                id: context.session.userId!,
+              },
             },
-          },
-          slug: slugify(post.title),
-          toChannels: {
-            connect: {
-              id: channel,
+            slug: slugify(post.title),
+            toChannels: {
+              connect: {
+                id: channel,
+              },
             },
+            ...post,
           },
-          ...post,
-        },
-      }).then(decodePost);
+        })
+        .then(decodePost);
     },
 
-  //   modifyChannel: async (_parent, { channelId, channel }, context) => {
-  //     if (context.session.permission < PermissionLevel.STAFF) {
-  //       throw new GraphQLError('Permission denied');
-  //     }
-  //     return db.channel.update({
-  //       where: {
-  //         id: channelId,
-  //       },
-  //       data: {
-  //         ...channel,
-  //       },
-  //     });
-  //   },
+    //   modifyChannel: async (_parent, { channelId, channel }, context) => {
+    //     if (context.session.permission < PermissionLevel.STAFF) {
+    //       throw new GraphQLError('Permission denied');
+    //     }
+    //     return db.channel.update({
+    //       where: {
+    //         id: channelId,
+    //       },
+    //       data: {
+    //         ...channel,
+    //       },
+    //     });
+    //   },
   },
 };
 

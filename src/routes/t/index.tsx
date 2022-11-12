@@ -1,15 +1,18 @@
 import { Channel } from '@prisma/client';
 import {
+  Avatar,
   Button,
   ColorSwatch,
   css,
   EmptyResult,
   Group,
+  Header,
   Menu,
   Page,
   Spacer,
   Stack,
   Table,
+  Text,
 } from 'dolmen';
 import { gql } from 'graphql-request';
 import { For, Show, Suspense } from 'solid-js';
@@ -18,6 +21,7 @@ import { createServerData$ } from 'solid-start/server';
 import { getServerSession } from '../../auth/session';
 import { ComposeButton } from '../../components/ComposeButton';
 import { ComposeWrapper } from '../../components/ComposeWrapper';
+import { RelativeDate } from '../../components/RelativeDate';
 import { runQuery } from '../../graphql/serverClient';
 import { Post } from '../../graphql/types';
 
@@ -39,6 +43,18 @@ export const topicSummaryQuery = gql`
       id
       title
       status
+      slug
+      updatedAt
+      channels {
+        id
+        name
+        color
+      }
+      author {
+        username
+        displayName
+        avatar
+      }
     }
   }
 `;
@@ -88,23 +104,47 @@ export default function TopicSummary() {
               <Table.Row>
                 <Table.Cell w="60%">Topic</Table.Cell>
                 <Table.Cell w="20%"></Table.Cell>
-                <Table.Cell>Replies</Table.Cell>
-                <Table.Cell>Views</Table.Cell>
-                <Table.Cell>Activity</Table.Cell>
+                <Table.Cell textAlign="center">Replies</Table.Cell>
+                <Table.Cell textAlign="center">Views</Table.Cell>
+                <Table.Cell textAlign="center">Activity</Table.Cell>
               </Table.Row>
             </Table.Head>
-            <Table.Body>
-              <Table.Row>
-                <Table.Cell>Topic Example</Table.Cell>
-                <Table.Cell></Table.Cell>
-                <Table.Cell>0</Table.Cell>
-                <Table.Cell>0</Table.Cell>
-                <Table.Cell>1d</Table.Cell>
-              </Table.Row>
-            </Table.Body>
+            <Suspense>
+              <Table.Body>
+                <For each={data()?.topics ?? []}>
+                  {post => (
+                    <Table.Row>
+                      <Table.Cell>
+                        <Header>{post.title}</Header>
+                        <div>
+                          <For each={post.channels}>
+                            {channel => (
+                              <Group gap="md">
+                                <ColorSwatch color={channel.color} />
+                                <Text size="sm">{channel.name}</Text>
+                              </Group>
+                            )}
+                          </For>
+                        </div>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Avatar size="sm" src={post.author.avatar}>
+                          {post.author.displayName}
+                        </Avatar>
+                      </Table.Cell>
+                      <Table.Cell textAlign="center">0</Table.Cell>
+                      <Table.Cell textAlign="center">0</Table.Cell>
+                      <Table.Cell textAlign="center">
+                        <RelativeDate from={post.updatedAt} />
+                      </Table.Cell>
+                    </Table.Row>
+                  )}
+                </For>
+              </Table.Body>
+            </Suspense>
           </Table>
           <Suspense>
-            <Show when={data()}>
+            <Show when={data() && data().topics.length === 0}>
               <EmptyResult>No topics yet!</EmptyResult>
             </Show>
           </Suspense>

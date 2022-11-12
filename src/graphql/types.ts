@@ -67,13 +67,18 @@ export type MutationModifyChannelArgs = {
 
 export type Post = {
   __typename?: 'Post';
+  author: UserAccount;
   authorId: Scalars['String'];
   body: Scalars['JSONObject'];
+  channels?: Maybe<Array<Channel>>;
   createdAt: Scalars['DateTime'];
   editedAt: Scalars['DateTime'];
   id: Scalars['Int'];
   license?: Maybe<Scalars['String']>;
+  numViews: Scalars['Int'];
+  parent?: Maybe<Scalars['Int']>;
   postedAt: Scalars['DateTime'];
+  respondents: Array<Scalars['String']>;
   slug: Scalars['String'];
   status: PostStatus;
   tags: Array<Scalars['String']>;
@@ -259,13 +264,18 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
+  author?: Resolver<ResolversTypes['UserAccount'], ParentType, ContextType>;
   authorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   body?: Resolver<ResolversTypes['JSONObject'], ParentType, ContextType>;
+  channels?: Resolver<Maybe<Array<ResolversTypes['Channel']>>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   editedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   license?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  numViews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  parent?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   postedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  respondents?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['PostStatus'], ParentType, ContextType>;
   tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
