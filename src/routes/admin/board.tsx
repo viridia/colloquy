@@ -1,4 +1,13 @@
-import { Alert, Button, Card, createFormValidation, FormField, Input, Page } from 'dolmen/dist/mjs';
+import {
+  Alert,
+  Button,
+  Card,
+  createFormValidation,
+  cx,
+  FormField,
+  Input,
+  Page,
+} from 'dolmen/dist/mjs';
 import { Show, Suspense } from 'solid-js';
 import { FormError, useRouteData } from 'solid-start';
 import { createServerAction$, createServerData$ } from 'solid-start/server';
@@ -83,7 +92,7 @@ export default function BoardConfigPage() {
   return (
     <Page.Content>
       <Suspense>
-        <Card w="20rem">
+        <Card classList={cx({ w: '20rem' })}>
           <Form {...formProps}>
             <Card.Content gap="xl">
               <FormField
@@ -93,7 +102,11 @@ export default function BoardConfigPage() {
               >
                 <Input name="boardName" max={48} value={board()?.title} />
               </FormField>
-              <Button color="primary" disabled={createBoard.error} alignSelf="end">
+              <Button
+                color="primary"
+                disabled={createBoard.error}
+                classList={cx({ alignSelf: 'end' })}
+              >
                 <Show when={board()?.exists} fallback={<span>Create</span>}>
                   <span>Rename</span>
                 </Show>

@@ -4,6 +4,7 @@ import {
   ButtonGroup,
   ColorSwatch,
   css,
+  cx,
   Group,
   Header,
   Input,
@@ -126,7 +127,7 @@ export const ComposeEditor: VoidComponent<Props> = () => {
                 value: channel.id,
                 label: (
                   <Group gap="lg">
-                    <ColorSwatch color={channel.color} w={12} h={12} />
+                    <ColorSwatch color={channel.color} classList={cx({ w: 12, h: 12 })} />
                     {channel.name}
                   </Group>
                 ),
@@ -135,10 +136,9 @@ export const ComposeEditor: VoidComponent<Props> = () => {
           </Show>
         </Suspense>
         <Input
+          classList={cx({ flex: 1, minWidth: '5rem' })}
           placeholder="title..."
           name="title"
-          flex={1}
-          minWidth="5rem"
           value={title()}
           onInput={e => setTitle(e.currentTarget.value)}
         />
@@ -173,7 +173,12 @@ export const ComposeEditor: VoidComponent<Props> = () => {
           </Button>
         </ButtonGroup>
       </Group>
-      <TextArea name="body" flex={1} value={body()} onInput={e => setBody(e.currentTarget.value)} />
+      <TextArea
+        name="body"
+        classList={cx({ flex: 1 })}
+        value={body()}
+        onInput={e => setBody(e.currentTarget.value)}
+      />
       <Show when={error()}>
         <Alert severity="error">{error()}</Alert>
       </Show>

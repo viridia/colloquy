@@ -14,7 +14,9 @@ const decodeUser = (t: User): UserAccount => ({
   avatar: t.email ? gravatar.url(t.email) : undefined,
 });
 
-const decodePost = (t: PostRecord & { toChannels: Channel[]; author: User }): Post => ({
+const decodePost = (
+  t: PostRecord & { toChannels?: Channel[]; author?: User; replies?: PostRecord[] }
+): Post => ({
   id: t.id,
   authorId: t.authorId,
   author: t.author ? decodeUser(t.author) : undefined,
@@ -22,7 +24,7 @@ const decodePost = (t: PostRecord & { toChannels: Channel[]; author: User }): Po
   updatedAt: t.updatedAt,
   editedAt: t.editedAt,
   postedAt: t.postedAt,
-  body: null,
+  body: t.body,
   title: t.title,
   slug: t.slug,
   status: t.status as PostStatus,
@@ -31,6 +33,8 @@ const decodePost = (t: PostRecord & { toChannels: Channel[]; author: User }): Po
   respondents: [],
   parent: t.parentId,
   channels: t.toChannels,
+  replies: [],
+  // replies: t.replies ? t.replies.map(decodePost) : [],
 });
 
 const posts: Resolvers<QueryContext> = {
@@ -53,6 +57,29 @@ const posts: Resolvers<QueryContext> = {
         })
         .then(topics => topics.map(decodePost));
     },
+
+    thread(_parent, { postId }, _context, info) {
+      const fields = graphqlFields(info);
+      return db.post
+        .findUnique({
+          where: {
+            id: postId,
+          },
+          include: {
+            author: true,
+            toChannels: !!fields.channels,
+            replies: {
+              include: {
+                author: true,
+              },
+              orderBy: {
+                createdAt: 'asc',
+              },
+            },
+          },
+        })
+        .then(post => decodePost(post));
+    },
   },
 
   // TODO: Implement Post mutations.
@@ -71,7 +98,9 @@ const posts: Resolvers<QueryContext> = {
                 id: context.session.userId!,
               },
             },
-            slug: slugify(post.title),
+            slug: slugify(post.title.slice(0, 64), {
+              lower: true,
+            }),
             toChannels: {
               connect: {
                 id: channel,

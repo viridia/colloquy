@@ -1,3 +1,4 @@
+import { Tooltip } from 'dolmen';
 import { VoidComponent } from 'solid-js';
 
 interface Props {
@@ -26,5 +27,9 @@ export const RelativeDate: VoidComponent<Props> = props => {
     });
   };
 
-  return <span>{result()}</span>;
+  return (
+    <Tooltip content={new Date(props.from).toLocaleDateString()}>
+      <span>{result()}</span>
+    </Tooltip>
+  );
 };

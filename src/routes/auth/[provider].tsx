@@ -1,4 +1,4 @@
-import { Alert, Stack, Title } from 'dolmen';
+import { Alert, cx, Stack, Title } from 'dolmen';
 import { Show } from 'solid-js';
 import { RouteDataArgs, useRouteData } from 'solid-start';
 import { createServerData$, redirect } from 'solid-start/server';
@@ -65,7 +65,7 @@ export function routeData({ params }: RouteDataArgs) {
 export default function AuthRedirectLanding() {
   const data = useRouteData<typeof routeData>();
   return (
-    <Stack m="xl" gap="xl">
+    <Stack classList={cx({ m: 'xl', gap: 'xl' })}>
       <Title>Logging In</Title>
       <Show when={data()?.error}>
         <Alert color="error">{data().description || data().error}</Alert>

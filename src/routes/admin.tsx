@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'solid-start';
-import { Aside, Breadcrumbs, Group, Nav, Page } from 'dolmen';
+import { Aside, Breadcrumbs, cx, Group, Nav, Page } from 'dolmen';
 import { AppHeader } from '../components/AppHeader';
 import { useClientSession } from '../auth/sessionContext';
 import { Show } from 'solid-js';
@@ -13,8 +13,8 @@ export default function Admin() {
         <Navigate href="/t" />
       </Show>
       <AppHeader breadcrumbs={[<Breadcrumbs.Item>Admin</Breadcrumbs.Item>]} />
-      <Group flex={1}>
-        <Aside alignSelf="stretch" w="200px" alignItems="stretch">
+      <Group classList={cx({ flex: 1 })}>
+        <Aside classList={cx({ w: '200px', alignSelf: 'stretch' })} alignItems="stretch">
           <Nav>
             <Nav.Title>Site Admin</Nav.Title>
             <NavLink href="/admin/board">Board</NavLink>

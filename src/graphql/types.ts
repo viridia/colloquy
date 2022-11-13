@@ -49,7 +49,7 @@ export type MutationCreateChannelArgs = {
 
 
 export type MutationCreateReplyArgs = {
-  parent: Scalars['String'];
+  parent: Scalars['Int'];
   post?: InputMaybe<PostInput>;
 };
 
@@ -78,6 +78,7 @@ export type Post = {
   numViews: Scalars['Int'];
   parent?: Maybe<Scalars['Int']>;
   postedAt: Scalars['DateTime'];
+  replies: Array<Post>;
   respondents: Array<Scalars['String']>;
   slug: Scalars['String'];
   status: PostStatus;
@@ -104,7 +105,7 @@ export type Query = {
   __typename?: 'Query';
   account?: Maybe<UserAccount>;
   channels: Array<Channel>;
-  thread: Array<Post>;
+  thread?: Maybe<Post>;
   topics: Array<Post>;
 };
 
@@ -115,7 +116,7 @@ export type QueryAccountArgs = {
 
 
 export type QueryThreadArgs = {
-  parent: Scalars['String'];
+  postId: Scalars['Int'];
 };
 
 
@@ -275,6 +276,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   numViews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   parent?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   postedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  replies?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType>;
   respondents?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   slug?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['PostStatus'], ParentType, ContextType>;
@@ -287,7 +289,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   account?: Resolver<Maybe<ResolversTypes['UserAccount']>, ParentType, ContextType, RequireFields<QueryAccountArgs, 'username'>>;
   channels?: Resolver<Array<ResolversTypes['Channel']>, ParentType, ContextType>;
-  thread?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryThreadArgs, 'parent'>>;
+  thread?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryThreadArgs, 'postId'>>;
   topics?: Resolver<Array<ResolversTypes['Post']>, ParentType, ContextType, Partial<QueryTopicsArgs>>;
 };
 

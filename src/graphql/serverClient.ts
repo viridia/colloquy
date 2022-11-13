@@ -18,14 +18,23 @@ export async function runQuery<Result = unknown>(args: IRequestArgs) {
     contextValue: { session: args.session },
     operationName: args.operationName,
   });
-  return normalize(result.data) as Result;
+  if (result.errors && result.errors.length > 0) {
+    const firstError = result.errors[0];
+    if (firstError instanceof Error) {
+      throw firstError;
+    }
+    // console.log(typeof firstError);
+    // console.log(firstError);
+    throw new Error('GQL error');
+  }
+  return normalize(result?.data) as Result;
 }
 
 // Needed because graphql creates objects with null prototypes, which serialize weirdly.
 function normalize<T>(input: T): T {
   if (Array.isArray(input)) {
     return input.map(normalize) as T;
-  } else if (typeof input === 'object') {
+  } else if (input && typeof input === 'object') {
     if (Object.getPrototypeOf(input) === null) {
       const output: Record<string, unknown> = {};
       for (const key in input) {

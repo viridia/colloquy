@@ -1,5 +1,5 @@
 // @refresh reload
-import { getCssText } from 'dolmen';
+import { getCssText, globalStyles } from 'dolmen';
 import { Show, Suspense } from 'solid-js';
 import {
   Body,
@@ -25,6 +25,8 @@ export default function Root() {
   const session = createServerData$(async (_, { request }) => {
     return getClientSession(request);
   });
+
+  globalStyles();
 
   return (
     <UserSettingsContext.Provider value={userSettings}>

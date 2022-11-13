@@ -1,5 +1,5 @@
 import { Channel } from '@prisma/client';
-import { Button, ColorSwatch, EmptyResult, Group, Page, Spacer, Table } from 'dolmen';
+import { Button, ColorSwatch, cx, EmptyResult, Group, Page, Spacer, Table } from 'dolmen';
 import { createSignal, lazy, Show } from 'solid-js';
 import { useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
@@ -47,7 +47,7 @@ export default function AdminChannels() {
         when={data()?.channels.length > 0}
         fallback={<EmptyResult>No channels created yet.</EmptyResult>}
       >
-        <Table mt="2rem">
+        <Table classList={cx({ mt: '2rem' })}>
           <Table.Head>
             <Table.Row>
               <Table.Cell>Channel</Table.Cell>

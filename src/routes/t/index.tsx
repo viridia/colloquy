@@ -4,6 +4,7 @@ import {
   Button,
   ColorSwatch,
   css,
+  cx,
   EmptyResult,
   Group,
   Header,
@@ -16,7 +17,7 @@ import {
 } from 'dolmen';
 import { gql } from 'graphql-request';
 import { For, Show, Suspense } from 'solid-js';
-import { useRouteData } from 'solid-start';
+import { A, useRouteData } from 'solid-start';
 import { createServerData$ } from 'solid-start/server';
 import { getServerSession } from '../../auth/session';
 import { ComposeButton } from '../../components/ComposeButton';
@@ -28,6 +29,11 @@ import { Post } from '../../graphql/types';
 const topicListCss = css({
   width: 'min(70rem, 95%)',
   flex: 1,
+});
+
+const topicNameCss = css({
+  color: '$text',
+  textDecoration: 'none',
 });
 
 export const topicSummaryQuery = gql`
@@ -86,7 +92,7 @@ export default function TopicSummary() {
                     {channel => (
                       <Menu.Item>
                         <Group gap="lg">
-                          <ColorSwatch color={channel.color} w={12} h={12} />
+                          <ColorSwatch color={channel.color} classList={cx({ w: 12, h: 12 })} />
                           {channel.name}
                         </Group>
                       </Menu.Item>
@@ -102,8 +108,8 @@ export default function TopicSummary() {
           <Table>
             <Table.Head>
               <Table.Row>
-                <Table.Cell w="60%">Topic</Table.Cell>
-                <Table.Cell w="20%"></Table.Cell>
+                <Table.Cell classList={cx({ w: '60%' })}>Topic</Table.Cell>
+                <Table.Cell classList={cx({ w: '20%' })}></Table.Cell>
                 <Table.Cell textAlign="center">Replies</Table.Cell>
                 <Table.Cell textAlign="center">Views</Table.Cell>
                 <Table.Cell textAlign="center">Activity</Table.Cell>
@@ -115,7 +121,9 @@ export default function TopicSummary() {
                   {post => (
                     <Table.Row>
                       <Table.Cell>
-                        <Header>{post.title}</Header>
+                        <A class={topicNameCss()} href={`/t/${post.slug}/${post.id}`}>
+                          <Header>{post.title}</Header>
+                        </A>
                         <div>
                           <For each={post.channels}>
                             {channel => (

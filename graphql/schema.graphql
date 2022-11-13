@@ -109,6 +109,9 @@ type Post {
   # List of user ids for users who have replied to this post (denormalized).
   respondents: [String!]!
 
+  # Lit of replies to this post
+  replies: [Post!]!
+
   #   // Reactions to this post - likes, flags, up/down votes.
   #   reactions Reaction[]
 
@@ -137,8 +140,8 @@ type Query {
   # Return list of top-level topics
   topics(filters: TopicFiltersInput): [Post!]!
 
-  # Return a topic and all replies to it
-  thread(parent: String!): [Post!]!
+  # Return a topic post and all replies to it
+  thread(postId: Int!): Post
 }
 
 type Mutation {
@@ -152,7 +155,7 @@ type Mutation {
   createTopic(channel: String!, post: PostInput): Post
 
   # Reply to a post
-  createReply(parent: String!, post: PostInput): Post
+  createReply(parent: Int!, post: PostInput): Post
 
   # editPost
   # deletePost

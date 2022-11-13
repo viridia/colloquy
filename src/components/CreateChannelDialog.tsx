@@ -9,6 +9,7 @@ import {
   createFormValidation,
   ColorGrid,
   css,
+  cx,
 } from 'dolmen';
 import { createEffect, createSignal, Show, useContext, VoidComponent } from 'solid-js';
 import { createRouteAction } from 'solid-start';
@@ -121,7 +122,11 @@ const CreateChannelDialog: VoidComponent<Props> = props => {
             <Input name="channelName" max={24} autofocus value={props.channelToEdit?.name ?? ''} />
           </FormField>
           <FormField title="Channel Description">
-            <TextArea h="5rem" name="description" value={props.channelToEdit?.description ?? ''} />
+            <TextArea
+              classList={cx({ h: '5rem' })}
+              name="description"
+              value={props.channelToEdit?.description ?? ''}
+            />
           </FormField>
           <FormField>
             <CheckBox checked={props.channelToEdit?.public ?? true} name="public">
